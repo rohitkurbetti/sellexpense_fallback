@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp">
+    <ScrollView android:layout_height="match_parent"
+        android:layout_width="match_parent">
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+
+        android:orientation="horizontal"
+        android:padding="2dp"
+        tools:ignore="MissingConstraints">
+
+        <TableRow android:orientation="vertical"
+            android:layout_marginHorizontal="1dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Name"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/etcname"
+                android:layout_width="302dp"
+                android:maxEms="16"
+                android:layout_height="wrap_content"
+                android:hint="Enter Customer name"
+                android:inputType="text"></EditText>
+
+        </TableRow>
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Orange"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/orangeu"
+                android:layout_width="302dp"
+                android:layout_height="wrap_content"
+                android:hint="Enter Orange rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Kokam"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/kokamu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Kokam rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Lemon"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/lemonu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Lemon rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Sarbat"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/sarbatu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Sarbat rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Pachak"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/pachaku"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Pachak rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Wala"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/walau"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Wala rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="LSoda"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/lsodau"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter LSoda rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Soda Srbt"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/ssrbtu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter LSoda rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="LOrange"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/lorangeu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Lorange rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Llemon"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/llemonu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Llemon rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Jsoda"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/jsodau"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Jeera Soda rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="StrbrySoda"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/ssodau"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Stwbry Soda rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Water"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/wateru"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Water rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Lassi"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/lassiu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Lassi rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Other"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/otheru"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Other rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Vanilla"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/vanillau"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Vanilla rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Pista"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/pistau"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Pista rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="StwBry"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/stwbryu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Stwbry rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Mango"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/mangou"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Mango rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="BtrSch"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/btrschu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter BtrSch rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Kulfi"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/kulfiu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Kulfi rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Cbar"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/cbaru"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Cbar rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Fpack"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/fpacku"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Fpack rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Other1"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/other1u"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Other1 rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+
+    </TableLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

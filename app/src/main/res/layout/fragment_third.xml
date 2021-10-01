@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ThirdFragment">
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="250dp"
+        android:layout_height="45dp"
+        android:id="@+id/btnView"
+        android:text="View"
+        />
+
+    <TextView
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:padding="5dp"
+        android:gravity="center"
+        android:enabled="false"
+        android:id="@+id/fromDate"
+        android:text="From date" />
+
+    <TextView
+        android:id="@+id/toDate"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="210dp"
+        android:gravity="center"
+        android:enabled="false"
+        android:text="To date" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:id="@+id/txtField"
+        android:enabled="false"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:hint="Enter billno/Name"
+        />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:id="@+id/imgBtn"
+        android:src="@drawable/ic_print"
+        android:layout_marginTop="200dp"
+        />
+
+    <Button
+        android:id="@+id/editData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="300dp"
+        android:layout_marginLeft="90dp"
+        android:text="Edit" />
+
+    <EditText
+        android:id="@+id/editBillNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Enter BillNo"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="300dp"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/btnDelBillNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="350dp"
+        android:layout_marginLeft="90dp"
+        android:text="Delete" />
+
+    <EditText
+        android:id="@+id/etBillNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Enter BillNo"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="350dp"
+        android:inputType="number" />
+
+
+    <HorizontalScrollView
+        android:layout_marginTop="430dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+    <TableLayout
+        android:id="@+id/tbEstimation"
+        android:layout_gravity="center_horizontal"
+        android:paddingHorizontal="5dp"
+        android:paddingBottom="10dp"
+        android:layout_marginHorizontal="10sp"
+        android:layout_width="match_parent"
+        android:layout_height="300dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Todays Selling"
+            android:padding="5dp"
+            android:textSize="24dp"
+            android:textAlignment="center"
+            ></TextView>
+        <TableRow
+            android:gravity="center_horizontal"
+            android:padding="5dp"
+            android:textAlignment="center"
+            >
+            <TextView
+                android:id="@+id/serialNo"
+                android:paddingHorizontal="5dp"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginHorizontal="10dp"
+                android:gravity="center_horizontal"
+                android:text="No"/>
+            <TextView
+                android:id="@+id/total1"
+                android:paddingHorizontal="20dp"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginHorizontal="25dp"
+                android:gravity="center_horizontal"
+                android:text="Total"/>
+
+            <TextView
+                android:id="@+id/currDate"
+                android:paddingHorizontal="60dp"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginHorizontal="25dp"
+                android:gravity="center_horizontal"
+                android:text="Date"/>
+            </TableRow>
+        <View
+            android:layout_height="3dip"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="5dp"
+            android:background="#ff0000"/>
+        </TableLayout>
+        </ScrollView>
+    </HorizontalScrollView>
+
+</FrameLayout>
