@@ -31,7 +31,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
             case 0: return new FirstFragment();
             case 1: return new SecondFragment();
             case 2: return new ThirdFragment();
-//            case 3: return new ScheduleFragment();
+            case 3: return new ScheduleFragment();
         }
         return null;
     }
@@ -44,6 +44,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return 4;
     }
 }

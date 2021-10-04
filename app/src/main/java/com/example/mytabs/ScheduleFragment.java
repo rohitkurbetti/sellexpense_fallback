@@ -84,11 +84,14 @@ public class ScheduleFragment extends Fragment {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (selTime.getText().equals("00 : 00") && !selTime.getText().toString().isEmpty()) {
-                    Toast.makeText(getContext(), "Please set time first", Toast.LENGTH_SHORT).show();
-                } else {
-                    cancelAlarm();
-                }
+//                if (selTime.getText().equals("00 : 00") && !selTime.getText().toString().isEmpty()) {
+//                    Toast.makeText(getContext(), "Please set time first", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    cancelAlarm();
+//
+//                }
+                Intent i = new Intent(getActivity().getApplicationContext(),Destination.class);
+                startActivity(i);
             }
         });
 

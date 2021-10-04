@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="5dp"
     tools:context=".Destination">
 
 
@@ -12,28 +11,28 @@
         android:id="@+id/tt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="Select Date"
         android:textAlignment="center"
+        android:gravity="center_horizontal"
         android:textSize="40sp"
+        android:text="Select Date"
         tools:ignore="MissingConstraints">
 
     </TextView>
 
     <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:layout_marginLeft="5dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <TableRow>
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="70dp"
                 android:text="Prev Balance"
-                android:textSize="20dp"></TextView>
+                android:layout_marginTop="70dp"
+                android:textSize="20dp"
+                ></TextView>
 
             <TextView
                 android:id="@+id/tvPrevBal"
@@ -41,7 +40,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="70dp"
-                android:text="  Prev Bal"
+                android:paddingLeft="5dp"
+                android:text=" Prev Bal"
                 android:textSize="20dp"></TextView>
         </TableRow>
 
@@ -50,9 +50,10 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:text="Todays Selling"
-                android:textSize="20dp"></TextView>
+                android:layout_marginTop="5dp"
+                android:textSize="20dp"
+                ></TextView>
 
             <TextView
                 android:id="@+id/tvSelling"
@@ -60,20 +61,23 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
+                android:paddingLeft="5dp"
                 android:text=" Todays Selling"
                 android:textSize="20dp"></TextView>
 
         </TableRow>
 
 
-        <TableRow>
 
+
+        <TableRow>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:text="Expenses"
-                android:textSize="20dp"></TextView>
+                android:layout_marginTop="5dp"
+                android:textSize="20dp"
+                ></TextView>
 
             <EditText
                 android:id="@+id/etExp"
@@ -83,19 +87,19 @@
                 android:layout_marginTop="5dp"
                 android:hint="Expenses"
                 android:inputType="number"
+                android:paddingLeft="5dp"
                 android:textSize="20dp"></EditText>
 
         </TableRow>
-
         <TableRow>
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-
                 android:text="Profit"
-                android:textSize="20dp"></TextView>
+
+                android:layout_marginTop="5dp"
+                android:textSize="20dp"
+                ></TextView>
 
             <TextView
                 android:id="@+id/tvProfit"
@@ -103,7 +107,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
-                android:text="0"
+                android:paddingLeft="5dp"
+                android:text=" 0"
                 android:textSize="20dp"></TextView>
 
         </TableRow>
@@ -114,9 +119,10 @@
                 android:id="@+id/btnCommit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="commit"
                 android:layout_marginTop="40dp"
                 android:layout_span="2"
-                android:text="commit">
+                >
 
             </Button>
         </TableRow>

@@ -295,8 +295,9 @@ public class Destination extends AppCompatActivity {
         tt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                jobScheduler.cancel(JOB_ID);
-                Toast.makeText(getApplicationContext(), "Job Cancelled...", Toast.LENGTH_SHORT).show();
+//                jobScheduler.cancel(JOB_ID);
+//                Toast.makeText(getApplicationContext(), "Job Cancelled...", Toast.LENGTH_SHORT).show();
+                callDatePicker();
             }
         });
 
