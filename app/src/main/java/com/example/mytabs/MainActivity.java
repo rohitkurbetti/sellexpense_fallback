@@ -1,36 +1,54 @@
 package com.example.mytabs;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -38,21 +56,35 @@ import android.widget.Toast;
 
 import com.example.mytabs.ui.main.SectionsPagerAdapter;
 import com.ibm.icu.text.RuleBasedNumberFormat;
+import com.opencsv.CSVReader;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.OutputStream;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements MyResultReceiver{
+import static com.itextpdf.svg.SvgConstants.Tags.PATH;
+
+public class MainActivity extends AppCompatActivity {
     private static final int TIME_INTERVAL = 2000; // # milliseconds, desired time passed between two back presses.
+    private static final int ACTIVITY_CHOOSE_FILE = 123;
     private long mBackPressed;
+    private String[] storagePermissions;
+    private static final int STORAGE_REQUEST_CODE_EXPORT = 1;
+    private static final int STORAGE_REQUEST_CODE_IMPORT = 2;
+
 
     public FirstFragment f1;
     public SecondFragment f2;
@@ -71,10 +103,650 @@ public class MainActivity extends AppCompatActivity implements MyResultReceiver{
     int iceTotal;
     int coldTotal;
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.action_restore){
+            if(checkStoragePermission()){
+                //permission allowed
+                class MyImport extends AsyncTask<String,Void,String>{
+                    @Override
+                    protected String doInBackground(String... strings) {
+                        importCSV();
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(String s) {
+                        super.onPostExecute(s);
+                        Toast.makeText(context, "Done Importing", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                new MyImport().execute();
+
+            }else{
+                requestStoragePermissionImport();
+//                int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+//
+//                if (permission != PackageManager.PERMISSION_GRANTED) {
+//                    // We don't have permission so prompt the user
+//                    ActivityCompat.requestPermissions(
+//                            this,
+//                            storagePermissions,
+//                            STORAGE_REQUEST_CODE_IMPORT
+//                    );
+//                }
+            }
+        }
+        if(id == R.id.action_backup){
+            if(checkStoragePermission()){
+                //permission allowed
+                class MyTask extends AsyncTask<String,Void,String>{
+
+                    @Override
+                    protected String doInBackground(String... strings) {
+                        exportCSV();
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(String s) {
+                        super.onPostExecute(s);
+                        Toast.makeText(context, "Done Exporting", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                new MyTask().execute();
+
+            }else{
+                requestStoragePermissionExport();
+//                int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//
+//                if (permission != PackageManager.PERMISSION_GRANTED) {
+//                    // We don't have permission so prompt the user
+//                    ActivityCompat.requestPermissions(
+//                            this,
+//                            storagePermissions,
+//                            STORAGE_REQUEST_CODE_EXPORT
+//                    );
+//                }
+            }
+        }
+        if(id == R.id.action_sendMail){
+            if(checkStoragePermission()){
+                //permission allowed
+                saveToMail();
+            }else{
+                requestStoragePermissionImport();
+//                int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//
+//                if (permission != PackageManager.PERMISSION_GRANTED) {
+//                    // We don't have permission so prompt the user
+//                    ActivityCompat.requestPermissions(
+//                            this,
+//                            storagePermissions,
+//                            STORAGE_REQUEST_CODE_EXPORT
+//                    );
+//                }
+            }
+        }
+        if(id == R.id.action_openDoc){
+            if(checkStoragePermission()){
+                //permission allowed
+//                saveToMail();
+                Intent chooseFile;
+                Intent intent;
+                chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+                chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
+                chooseFile.setType("application/csv");
+                intent = Intent.createChooser(chooseFile, "Choose a file");
+                startActivityForResult(intent, ACTIVITY_CHOOSE_FILE);
+
+            }else{
+                requestStoragePermissionImport();
+//                int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//
+//                if (permission != PackageManager.PERMISSION_GRANTED) {
+//                    // We don't have permission so prompt the user
+//                    ActivityCompat.requestPermissions(
+//                            this,
+//                            storagePermissions,
+//                            STORAGE_REQUEST_CODE_EXPORT
+//                    );
+//                }
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK) return;
+        String path = "";
+        if(requestCode == ACTIVITY_CHOOSE_FILE)
+        {
+            Uri uri = data.getData();
+            String fileExtStr = uri.getPath().substring(uri.getPath().lastIndexOf("."));
+            System.out.println(fileExtStr);
+            if(fileExtStr.contentEquals(".csv")){
+                String FilePath = getRealPathFromURI(uri); // should the path be here in this string
+                File file = new File(FilePath);
+
+                importFromSelectedCSV(file,FilePath);
+
+//            Intent intent = new Intent(Intent.ACTION_VIEW);
+//            Uri data1 = null;
+//            if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.N){
+//                data1 = FileProvider.getUriForFile(context,BuildConfig.APPLICATION_ID+".provider",file);
+//            }else{
+//                data1 = Uri.fromFile(file);
+//            }
+//            intent.setDataAndType(data1, getContentResolver().getType(data1));
+//            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//            startActivity(intent);
+            }else{
+                Toast.makeText(context, "Invalid File\nPlease choose CSV File", Toast.LENGTH_LONG).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Do you want to Browse for the file?");
+                builder.setCancelable(false);
+                builder.setPositiveButton("Browse", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(checkStoragePermission()){
+                            //permission allowed
+//                saveToMail();
+                            Intent chooseFile;
+                            Intent intent;
+                            chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+                            chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
+                            chooseFile.setType("application/csv");
+                            intent = Intent.createChooser(chooseFile, "Choose a file");
+                            startActivityForResult(intent, ACTIVITY_CHOOSE_FILE);
+
+                        }else{
+                            requestStoragePermissionImport();
+//                int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//
+//                if (permission != PackageManager.PERMISSION_GRANTED) {
+//                    // We don't have permission so prompt the user
+//                    ActivityCompat.requestPermissions(
+//                            this,
+//                            storagePermissions,
+//                            STORAGE_REQUEST_CODE_EXPORT
+//                    );
+//                }
+                        }
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        }
+    }
+
+    private void importFromSelectedCSV(File file,String FilePath) {
+        File csvFile1=null,csvFile = null;
+        DbManager db = new DbManager(MainActivity.this);
+        if(FilePath.contains("SQLite_BillBackup.csv")){
+            csvFile1 = file;
+
+            if(csvFile1.exists()){
+                //backup exists
+                System.out.println("abs path1:"+csvFile1.getAbsolutePath());
+                try {
+                    CSVReader csvReader1 = new CSVReader(new FileReader(csvFile1.getAbsolutePath()));
+                    String[] nexLine1;
+                    if(csvFile1.length()>0){
+                        db.clearBill();
+                    }
+//                if(csvFile1.exists() && csvReader1.readNext() != null){
+//                    db.clearBill();
+//                }
+                    while((nexLine1 = csvReader1.readNext()) != null){
+//                    int id = Integer.parseInt(nexLine1[0]);
+                        int billNo = Integer.parseInt(nexLine1[0]);
+                        String custName = String.valueOf(nexLine1[1]);
+                        int orange = Integer.parseInt(nexLine1[2]);
+                        int kokam = Integer.parseInt(nexLine1[3]);
+                        int lemon = Integer.parseInt(nexLine1[4]);
+                        int sarbat = Integer.parseInt(nexLine1[5]);
+                        int pachak = Integer.parseInt(nexLine1[6]);
+                        int wala = Integer.parseInt(nexLine1[7]);
+                        int lsoda = Integer.parseInt(nexLine1[8]);
+                        int ssrbt = Integer.parseInt(nexLine1[9]);
+                        int lorange = Integer.parseInt(nexLine1[10]);
+                        int llemon = Integer.parseInt(nexLine1[11]);
+                        int jsoda = Integer.parseInt(nexLine1[12]);
+                        int sSoda = Integer.parseInt(nexLine1[13]);
+                        int water = Integer.parseInt(nexLine1[14]);
+                        int lassi = Integer.parseInt(nexLine1[15]);
+                        int vanilla = Integer.parseInt(nexLine1[16]);
+                        int pista = Integer.parseInt(nexLine1[17]);
+                        int stwbry = Integer.parseInt(nexLine1[18]);
+                        int mango = Integer.parseInt(nexLine1[19]);
+                        int btrsch = Integer.parseInt(nexLine1[20]);
+                        int kulfi = Integer.parseInt(nexLine1[21]);
+                        int cbar = Integer.parseInt(nexLine1[22]);
+                        int fpack = Integer.parseInt(nexLine1[23]);
+                        int other = Integer.parseInt(nexLine1[24]);
+                        int other1 = Integer.parseInt(nexLine1[25]);
+                        int total = Integer.parseInt(nexLine1[26]);
+                        String addedDateTime = String.valueOf(nexLine1[27]);
+                        String date = String.valueOf(nexLine1[28]);
+                        db.addFromCSV1(billNo,custName,orange,kokam,lemon,sarbat,pachak,wala,lsoda,ssrbt,lorange,llemon,jsoda,sSoda,water,lassi,vanilla,pista,stwbry,mango,btrsch,kulfi,cbar,fpack,other,other1,total,addedDateTime,date);
+//                    db.updateExpOne(id,selling,expense,profit,date,expenses);
+                    }
+                    Toast.makeText(context, "Backup Restored Successfully", Toast.LENGTH_SHORT).show();
+                }catch (Exception e){
+                    System.out.println(e);
+                    Toast.makeText(context, e.getMessage()+"cought herer",  Toast.LENGTH_SHORT).show();
+                }
+            }else {
+                //backup doesnt exist
+                Toast.makeText(context, "No Backup Found", Toast.LENGTH_SHORT).show();
+            }
+        }else{
+            csvFile = file;
+
+            if(csvFile.exists()){
+                //backup exists
+                System.out.println("abs path:"+csvFile.getAbsolutePath());
+                try {
+                    CSVReader csvReader = new CSVReader(new FileReader(csvFile.getAbsolutePath()));
+                    String[] nexLine;
+                    while((nexLine = csvReader.readNext()) != null){
+                        int id = Integer.parseInt(nexLine[0]);
+                        int selling = Integer.parseInt(nexLine[1]);
+                        int expense = Integer.parseInt(nexLine[2]);
+                        int profit = Integer.parseInt(nexLine[3]);
+                        String date = nexLine[4];
+                        String expenses = nexLine[5];
+                        db.addFromCSV(id,selling,expense,profit,date,expenses);
+//                    db.updateExpOne(id,selling,expense,profit,date,expenses);
+                    }
+                    Toast.makeText(context, "Backup Restored Successfully", Toast.LENGTH_SHORT).show();
+                }catch (Exception e){
+                    Toast.makeText(context, e.getMessage(),  Toast.LENGTH_SHORT).show();
+                }
+            }else {
+                //backup doesnt exist
+                Toast.makeText(context, "No Backup Found", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
+
+
+    }
+
+    private String getRealPathFromURI(Uri uri) {
+        String [] proj = {MediaStore.Downloads.DATA};
+        Cursor cursor = getContentResolver().query( uri, proj, null, null,null);
+//        while(cursor.moveToNext()){
+//            System.out.println(cursor);
+//        }
+        if (cursor == null) return null;
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Downloads.DATA);
+        cursor.moveToFirst();
+        System.out.println("cindent:"+cursor.getString(column_index));
+        return cursor.getString(column_index);
+    }
+
+    private void requestStoragePermissionImport(){
+        ActivityCompat.requestPermissions(this,storagePermissions,STORAGE_REQUEST_CODE_IMPORT);
+    }
+
+    private void requestStoragePermissionExport(){
+        ActivityCompat.requestPermissions(this,storagePermissions,STORAGE_REQUEST_CODE_EXPORT);
+    }
+
+
+    private boolean checkStoragePermission() {
+        boolean result = ContextCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+        return result;
+    }
+
+    private void saveToMail(){
+        String pathAndFileName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/SQLiteBackup/Expense_Backup/" + "SQLite_ExpBackup.csv";
+        String pathAndFileName1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/SQLiteBackup/Billing_Backup/" + "SQLite_BillBackup.csv";
+        System.out.println(pathAndFileName);
+        File csvFile = new File(pathAndFileName);
+        File csvFile1 = new File(pathAndFileName1);
+        if(csvFile.exists() && csvFile1.exists()){
+            ArrayList<Uri> files = new ArrayList<>();
+            ArrayList<String> filesToSend = new ArrayList<>();
+            filesToSend.add(pathAndFileName);
+            filesToSend.add(pathAndFileName1);
+            for(String path : filesToSend /* List of the files you want to send */) {
+                File file = new File(path);
+                Uri uri11 = null;
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+                    uri11 = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID+".provider",file);
+                }else{
+                    uri11 = Uri.fromFile(file);
+                }
+                files.add(uri11);
+            }
+            if(files.size()>0){
+                Intent sendEmail= new Intent(Intent.ACTION_SEND_MULTIPLE);
+                sendEmail.setType("application/csv");
+//                sendEmail.putExtra(Intent.EXTRA_EMAIL,new String[]{USER_EMAIL});
+//                sendEmail.putExtra(Intent.EXTRA_SUBJECT,EMAIL_SUB);
+//                sendEmail.putExtra(Intent.EXTRA_TEXT,EMAIL_BODY);
+    //        sendEmail.putExtra(Intent.EXTRA_STREAM, uri1);
+                sendEmail.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
+                startActivity(Intent.createChooser(sendEmail, "Email:"));
+            }else{
+                Toast.makeText(context, "Files not Found", Toast.LENGTH_SHORT).show();
+            }
+        }else{
+            Toast.makeText(context, "Files not found", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+
+    private void importCSV() {
+        DbManager db = new DbManager(MainActivity.this);
+        String pathAndFileName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/SQLiteBackup/Expense_Backup/" + "SQLite_ExpBackup.csv";
+        String pathAndFileName1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/SQLiteBackup/Billing_Backup/" + "SQLite_BillBackup.csv";
+        System.out.println(pathAndFileName);
+        File csvFile = new File(pathAndFileName);
+        File csvFile1 = new File(pathAndFileName1);
+
+        Uri uri = FileProvider.getUriForFile(context,BuildConfig.APPLICATION_ID+".provider",csvFile);
+
+//        Intent i = new Intent(Intent.ACTION_SENDTO);
+//        i.setData(uri.parse("mailto:"));
+//        i.putExtra(Intent.EXTRA_EMAIL, new String[]{USER_EMAIL});
+//        i.putExtra(Intent.EXTRA_SUBJECT, EMAIL_SUB);
+//        i.putExtra(Intent.EXTRA_TEXT, EMAIL_BODY);
+//        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        i.putExtra(Intent.EXTRA_STREAM, uri);
+//        //i.type = "image/png"
+//        this.startActivity(Intent.createChooser(i, null));
+
+        File filePath = new File(pathAndFileName1);
+//        Intent intentShareFile = new Intent(Intent.ACTION_VIEW);
+//        File fileWithinMyDir = new File(pathAndFileName);
+        Uri uri1 = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID+".provider",filePath);
+
+//        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+//        emailIntent.setType("application/csv");
+//        emailIntent.setDataAndType(uri1,context.getContentResolver().getType(uri1));
+//        emailIntent.putExtra(Intent.EXTRA_EMAIL, "asds");
+//        emailIntent.putExtra(Intent.EXTRA_CC, "csa");
+//        emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        emailIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "UllageReport (Pdf)");
+//        emailIntent.putExtra(Intent.EXTRA_TEXT, "UllageReport");
+//        emailIntent.putExtra(Intent.EXTRA_STREAM, uri1);
+//        try{
+//            if (emailIntent.resolveActivity(getPackageManager()) != null) {
+//                startActivity(Intent.createChooser(emailIntent,"Send via"));
+//            }
+//        }
+//        catch(android.content.ActivityNotFoundException e){
+//            Toast.makeText(this, "No email client available", Toast.LENGTH_SHORT).show();
+//        }
+
+
+        if(csvFile.exists()){
+            //backup exists
+            System.out.println("abs path:"+csvFile.getAbsolutePath());
+            try {
+                CSVReader csvReader = new CSVReader(new FileReader(csvFile.getAbsolutePath()));
+                String[] nexLine;
+                while((nexLine = csvReader.readNext()) != null){
+                    int id = Integer.parseInt(nexLine[0]);
+                    int selling = Integer.parseInt(nexLine[1]);
+                    int expense = Integer.parseInt(nexLine[2]);
+                    int profit = Integer.parseInt(nexLine[3]);
+                    String date = nexLine[4];
+                    String expenses = nexLine[5];
+                    System.out.println("see me>>>"+expenses);
+                    db.addFromCSV(id,selling,expense,profit,date,expenses);
+//                    db.updateExpOne(id,selling,expense,profit,date,expenses);
+                }
+//                Toast.makeText(context, "Backup Restored Successfully", Toast.LENGTH_SHORT).show();
+            }catch (Exception e){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, e.getMessage(),  Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            }
+        }else {
+            //backup doesnt exist
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, "No Backup Found", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        if(csvFile1.exists()){
+            //backup exists
+            System.out.println("abs path1:"+csvFile1.getAbsolutePath());
+            try {
+                CSVReader csvReader1 = new CSVReader(new FileReader(csvFile1.getAbsolutePath()));
+                String[] nexLine1;
+
+                if(csvFile1.length()>0){
+                    db.clearBill();
+                }
+                while((nexLine1 = csvReader1.readNext()) != null){
+//                    int id = Integer.parseInt(nexLine1[0]);
+                    int billNo = Integer.parseInt(nexLine1[0]);
+                    String custName = String.valueOf(nexLine1[1]);
+                    int orange = Integer.parseInt(nexLine1[2]);
+                    int kokam = Integer.parseInt(nexLine1[3]);
+                    int lemon = Integer.parseInt(nexLine1[4]);
+                    int sarbat = Integer.parseInt(nexLine1[5]);
+                    int pachak = Integer.parseInt(nexLine1[6]);
+                    int wala = Integer.parseInt(nexLine1[7]);
+                    int lsoda = Integer.parseInt(nexLine1[8]);
+                    int ssrbt = Integer.parseInt(nexLine1[9]);
+                    int lorange = Integer.parseInt(nexLine1[10]);
+                    int llemon = Integer.parseInt(nexLine1[11]);
+                    int jsoda = Integer.parseInt(nexLine1[12]);
+                    int sSoda = Integer.parseInt(nexLine1[13]);
+                    int water = Integer.parseInt(nexLine1[14]);
+                    int lassi = Integer.parseInt(nexLine1[15]);
+                    int vanilla = Integer.parseInt(nexLine1[16]);
+                    int pista = Integer.parseInt(nexLine1[17]);
+                    int stwbry = Integer.parseInt(nexLine1[18]);
+                    int mango = Integer.parseInt(nexLine1[19]);
+                    int btrsch = Integer.parseInt(nexLine1[20]);
+                    int kulfi = Integer.parseInt(nexLine1[21]);
+                    int cbar = Integer.parseInt(nexLine1[22]);
+                    int fpack = Integer.parseInt(nexLine1[23]);
+                    int other = Integer.parseInt(nexLine1[24]);
+                    int other1 = Integer.parseInt(nexLine1[25]);
+                    int total = Integer.parseInt(nexLine1[26]);
+                    String addedDateTime = String.valueOf(nexLine1[27]);
+                    String date = String.valueOf(nexLine1[28]);
+                    db.addFromCSV1(billNo,custName,orange,kokam,lemon,sarbat,pachak,wala,lsoda,ssrbt,lorange,llemon,jsoda,sSoda,water,lassi,vanilla,pista,stwbry,mango,btrsch,kulfi,cbar,fpack,other,other1,total,addedDateTime,date);
+//                    db.updateExpOne(id,selling,expense,profit,date,expenses);
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "Backup Restored Successfully", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }catch (Exception e){
+                System.out.println(e);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, e.getMessage()+"cought herer",  Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }else {
+            //backup doesnt exist
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, "No Backup Found", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void exportCSV() {
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS+"/SQLiteBackup/Expense_Backup").toString();
+        String path1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS+"/SQLiteBackup/Billing_Backup").toString();
+        File folder = new File(path);
+        File folder1 = new File(path1);
+        boolean isFolderCreated = false;
+        boolean isFolderCreated1 = false;
+        if(!folder.exists()){
+            //do mkdir
+            isFolderCreated = folder.mkdirs(); //create folder if not exists
+        }
+        if(!folder1.exists()){
+            //do mkdir
+            isFolderCreated1 = folder1.mkdirs(); //create folder if not exists
+        }
+        Calendar c = Calendar.getInstance();
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd_HHmmss");
+//        String dateFmt = sdf.format(c.getTime());
+        String csvFileName = "SQLite_ExpBackup.csv";
+        String csvFileName1 = "SQLite_BillBackup.csv";
+        //file path and name
+        String filepathAndName = folder.toString()+"/"+csvFileName;
+        String filepathAndName1 = folder1.toString()+"/"+csvFileName1;
+        System.out.println(filepathAndName);
+        System.out.println(filepathAndName1);
+        DbManager db = new DbManager(MainActivity.this);
+        Cursor res = db.getAllExp();
+        Cursor res1 = db.getData();
+        try {
+            FileWriter fw = new FileWriter(filepathAndName);
+            while(res.moveToNext()){
+                fw.append(String.valueOf(res.getInt(0)));
+                fw.append(",");
+                fw.append(String.valueOf(res.getInt(1)));
+                fw.append(",");
+                fw.append(String.valueOf(res.getInt(2)));
+                fw.append(",");
+                fw.append(String.valueOf(res.getInt(3)));
+                fw.append(",");
+                fw.append(String.valueOf(res.getString(4)));
+                fw.append(",");
+                fw.append(String.valueOf(res.getString(5)));
+                fw.append("\n");
+            }
+            fw.flush();
+            fw.close();
+            FileWriter fw1 = new FileWriter(filepathAndName1);
+            while(res1.moveToNext()){
+                fw1.append(String.valueOf(res1.getInt(1)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getString(2).isEmpty()?"-":res1.getString(2)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(3)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(4)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(5)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(6)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(7)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(8)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(9)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(10)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(11)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(12)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(13)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(14)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(15)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(16)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(17)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(18)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(19)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(20)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(21)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(22)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(23)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(24)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(25)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(26)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getInt(27)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getString(28)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getString(29)));
+                fw1.append("\n");
+            }
+            fw1.flush();
+            fw1.close();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, "BackedUp:"+filepathAndName+"\t"+filepathAndName1, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }catch (Exception e){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.abc_fade_in,R.anim.abc_fade_out);
         setContentView(R.layout.activity_main);
+        storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         context = getApplicationContext();
 //        FirstFragment f1 = new FirstFragment();
 //        FirstFragment f1 = (FirstFragment)getSupportFragmentManager().findFragmentById(R.id.frag1);
@@ -225,6 +897,13 @@ public class MainActivity extends AppCompatActivity implements MyResultReceiver{
                             Toast.makeText(getApplicationContext(), "Billing", Toast.LENGTH_SHORT).show();
                             masterFinal = f1.coldrinkFinalTotal + f2.IceCreamFinalTotal;
 //                            Toast.makeText(MainActivity.this, "FinalTotal:"+masterFinal, Toast.LENGTH_SHORT).show();
+                            int latestBillNo = db.getLatestBillNo();
+                            if(latestBillNo != 0){
+                                SharedPreferences sp = getSharedPreferences("key_code", MODE_PRIVATE);
+//                                int code = sp.getInt("code", 0);
+                                sp.edit().putInt("code",latestBillNo).commit();
+                                System.out.println("latest BillNo: "+latestBillNo);
+                            }
                             billNo_generated = generateSeq();
                             Date now = new Date();
                             long timestamp = now.getTime();
@@ -237,7 +916,13 @@ public class MainActivity extends AppCompatActivity implements MyResultReceiver{
                             String currDate = sdf1.format(now.getTime());
                             //tcf.setText("Orange: "+f1.orangeTotal+"\nKokam: "+f1.kokamTotal+"\nLemon: "+f1.lemonTotal+"\nSarbat: "+f1.sarbatTotal+"\n----------------\nTotal: "+f1.finalTotal+"\nDate & Time: "+dateStr);
                             String res = db.addRecord(billNo_generated,validCustName, f1.orangeTotal, f1.kokamTotal, f1.lemonTotal, f1.sarbatTotal, f1.pachakTotal, f1.walaTotal, f1.lSodaTotal, f1.ssrbtTotal, f1.lorangeTotal, f1.LlemonTotal,f1.jeeraTotal, f1.sSodaTotal ,f1.waterTotal ,f1.lassiTotal ,f2.vanillaTotal, f2.pistaTotal, f2.sbryTotal, f2.mangoTotal, f2.btrSchTotal,f2.kulfiTotal,f2.cbarTotal,f2.fpackTotal,f1.otherAmt,f2.otherAmt1, masterFinal, dateStr,currDate);
-                            printInvoice(billNo_generated, map, masterFinal,null,null);
+                            if(checkStoragePermission()){
+                                //permission allowed
+                                printInvoice(billNo_generated, map, masterFinal,null,null);
+                            }else{
+                                //permission denied
+                                requestStoragePermissionExport();
+                            }
                             Toast.makeText(getApplicationContext(), "Bill generated successfully", Toast.LENGTH_SHORT).show();
                             System.out.println("=====================data is going to be print======================");
                             System.out.println("BillNo: " + billNo_generated);
@@ -405,6 +1090,7 @@ public class MainActivity extends AppCompatActivity implements MyResultReceiver{
         int height = 480;
 //        int width =580;
         int qty = 0;
+        height = height + 5;
         for (Map.Entry<String, Item> itr : map.entrySet()) {
             Item obj = itr.getValue();
             myPaint.setTextAlign(Paint.Align.LEFT);
@@ -433,8 +1119,11 @@ public class MainActivity extends AppCompatActivity implements MyResultReceiver{
         int tempHeight = height;
         tempHeight = tempHeight - 50;
         canvas.drawRect(30, tempHeight, canvas.getWidth() - 30, height, myPaint);
-        canvas.drawText("TotalQty:" + map.size(), 380, 435, myPaint);
-        height = height + 50;
+//        height = height + 50;
+        myPaint.setColor(Color.WHITE);
+        canvas.drawText("TotalQty:", 550, height-15, myPaint);
+        canvas.drawText(String.valueOf(map.size()), 950, height-15, myPaint);
+        height = height + 45;
         myPaint.setColor(Color.BLACK);
         canvas.drawText("SubTotal", 550, height, myPaint);
         height = height + 40;
@@ -475,12 +1164,17 @@ public class MainActivity extends AppCompatActivity implements MyResultReceiver{
 
         mypdfDocument.finishPage(myPage);
         File file;
-        if(isReprint){
-            file = new File(getExternalFilesDir("/"), "GajananColdrinks_" + fileExt + "_" + billNo + "_updated.pdf");
-        }else{
-            file = new File(getExternalFilesDir("/"), "GajananColdrinks_" + fileExt + "_" + this.billNo_generated + ".pdf");
+        File folder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/GajananColdrinks");
+        if(!folder.exists()){
+            folder.mkdirs();
         }
-        String pdfFilePath = getExternalFilesDir("/").getAbsolutePath();
+
+        if(isReprint){
+            file = new File(folder, "GajananColdrinks_" + fileExt + "_" + billNo + "_updated.pdf");
+        }else{
+            file = new File(folder, "GajananColdrinks_" + fileExt + "_" + this.billNo_generated + ".pdf");
+        }
+        String pdfFilePath = folder.toString();
 //                +"/GajananColdrinks_"+ fileExt +"_" + this.billNo_generated + ".pdf";
 //        String pdfFilePath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Billing/"+"GajananColdrinks_"+ fileExt +"_" + this.billNo_generated + ".pdf";
         System.out.println(pdfFilePath);
@@ -613,22 +1307,6 @@ public class MainActivity extends AppCompatActivity implements MyResultReceiver{
 //        }else{
 //            iceTotal = 0;
 //        }
-//    }
-
-    @Override
-    public String getResult() {
-        return "Got the interface method";
-    }
-
-
-//    public void getMap(Map<String, Item> filteredmap1) {
-//        map.putAll(filteredmap1);
-//        Toast.makeText(context, "size1>>"+map.size(), Toast.LENGTH_SHORT).show();
-//    }
-//
-//    public void getMap2(Map<String, Item> filteredMap2) {
-//        map.putAll(filteredMap2);
-//        Toast.makeText(context, "size2>>"+map.size(), Toast.LENGTH_SHORT).show();
 //    }
 
     @Override

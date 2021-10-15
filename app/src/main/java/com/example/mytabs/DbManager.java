@@ -21,13 +21,14 @@ public class DbManager extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String str = "create table t_bill (id integer primary key autoincrement,billNo integer,custName text,orange integer ,kokam integer,lemon integer,sarbat integer,pachak integer,wala integer,lsoda integer,ssrbt integer,lorange integer,llemon integer,jsoda integer, sSoda integer,water integer, lassi integer ,vanilla integer,pista integer,stwbry integer,mango integer,btrsch integer,kulfi integer,cbar integer,fpack integer,other integer,other1 integer,total integer,addedondatetime Date,date Date)";
         db.execSQL(str);
-        String str1 = "create table t_expense (id integer primary key autoincrement,prevBal integer,currBal integer, todaySelling integer, todayExpense integer,todayProfit integer,date Date)";
+        String str1 = "create table t_expense (id integer primary key autoincrement,selling integer, expense integer,profit integer,date Date,expenses text)";
         db.execSQL(str1);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("drop table if exists t_bill");
+        db.execSQL("drop table if exists t_expense");
         onCreate(db);
     }
     public String addRecord(Long billNo, String custName, int orange, int kokam, int lemon, int sarbat, int pachak, int walaTotal, int lSodaTotal, int ssrbtTotal, int lorange, int llemon,int jsoda, int sSoda,int water, int lassi ,int vanilla , int pista , int stwbry, int mango, int btrsch,int kulfi,int cbar,int fpack,int other,int other1,int finalTotal, String addedDate, String date){
@@ -128,22 +129,20 @@ public class DbManager extends SQLiteOpenHelper {
         System.out.println("row updated");
     }
 
-    public String saveOne(int bkpPrevBal, int currTodayBal, int todayTotal, int expense, int profitToday, String ss) {
+    public int saveOne(int todayTotal, int expense, int profitToday, String ss,String expMap) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-
-        cv.put("prevBal",bkpPrevBal);
-        cv.put("currBal",currTodayBal);
-        cv.put("todaySelling", String.valueOf(todayTotal));
-        cv.put("todayExpense", String.valueOf(expense));
-        cv.put("todayProfit", String.valueOf(profitToday));
+        cv.put("selling", String.valueOf(todayTotal));
+        cv.put("expense", String.valueOf(expense));
+        cv.put("profit", String.valueOf(profitToday));
         cv.put("date", String.valueOf(ss));
+        cv.put("expenses", String.valueOf(expMap));
         System.out.println(cv);
         long res = db.insert("t_expense",null,cv);
         if(res==-1){
-            return "Failed";
+            return -1;
         }else{
-            return "Success: "+cv;
+            return 1;
         }
     }
 
@@ -162,18 +161,18 @@ public class DbManager extends SQLiteOpenHelper {
         }
     }
 
-    public void updateExpOne(int id, int bkpPrevBal, int currTodayBal, int todayTotal, int expense, int profitToday, String ss) {
+    public void updateExpOne(int id,int todayTotal, int expense, int profitToday, String ss,String expMap) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put("prevBal",bkpPrevBal);
-        cv.put("currBal",currTodayBal);
-        cv.put("todaySelling", String.valueOf(todayTotal));
-        cv.put("todayExpense", String.valueOf(expense));
-        cv.put("todayProfit", String.valueOf(profitToday));
+        cv.put("selling", String.valueOf(todayTotal));
+        cv.put("expense", String.valueOf(expense));
+        cv.put("profit", String.valueOf(profitToday));
         cv.put("date", String.valueOf(ss));
+        cv.put("expenses", String.valueOf(expMap));
+
         System.out.println(cv);
         db.update("t_expense",cv,"id = ?",new String[]{String.valueOf(id)});
-        System.out.println("row updated");
+        System.out.println("row has been updated");
     }
 
     public int getProfitVal(String ss) {
@@ -183,7 +182,7 @@ public class DbManager extends SQLiteOpenHelper {
         System.out.println(str);
         if(c.getCount() > 0){
             while (c.moveToNext()){
-                profit = c.getInt(5);
+                profit = c.getInt(3);
             }
             return profit;
         }else{
@@ -192,8 +191,7 @@ public class DbManager extends SQLiteOpenHelper {
     }
 
     public Cursor getAllExp() {
-
-        String str = "select * from t_expense order by id desc";
+        String str = "select * from t_expense order by date desc";
         Cursor c = db.rawQuery(str,null);
         return c;
     }
@@ -212,6 +210,93 @@ public class DbManager extends SQLiteOpenHelper {
         System.out.println(str);
         Cursor c = db.rawQuery(str,null);
         return c;
+    }
+
+    public String deleteExpByBillNo(int billno) {
+        long res = db.delete("t_expense"," id = ?",new String[]{String.valueOf(billno)});
+        if(res==-1){
+            return "Expense Deletion Failed: "+billno;
+        }else{
+            return "Expense deleted successfully: "+billno;
+        }
+    }
+
+    public Cursor getOneExp(int id) {
+        Cursor cursor = db.rawQuery("select * from t_expense where id = '"+id+"'",null);
+        return cursor;
+    }
+
+    public void addFromCSV(int id, int selling, int expense, int profit, String date, String expenses) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("id", String.valueOf(id));
+        cv.put("selling", String.valueOf(selling));
+        cv.put("expense", String.valueOf(expense));
+        cv.put("profit", String.valueOf(profit));
+        cv.put("date", String.valueOf(date));
+        cv.put("expenses", String.valueOf(expenses));
+        System.out.println(cv);
+        db.insert("t_expense",null,cv);
+    }
+
+    public void addFromCSV1(int billNo, String custName, int orange, int kokam, int lemon, int sarbat, int pachak, int wala, int lsoda, int ssrbt, int lorange, int llemon, int jsoda, int sSoda, int water, int lassi, int vanilla, int pista, int stwbry, int mango, int btrsch, int kulfi, int cbar, int fpack, int other, int other1, int total, String addedDateTime, String date) {
+        SQLiteDatabase db = this.getWritableDatabase();
+//        db.execSQL("delete from t_bill");
+        ContentValues cv = new ContentValues();
+        cv.put("billNo",billNo);
+        cv.put("custName",String.valueOf(custName));
+        cv.put("orange",orange);
+        cv.put("kokam",kokam);
+        cv.put("lemon",lemon);
+        cv.put("sarbat",sarbat);
+        cv.put("pachak",pachak);
+        cv.put("wala",wala);
+        cv.put("lsoda",lsoda);
+        cv.put("Ssrbt",ssrbt);
+        cv.put("lorange",lorange);
+        cv.put("llemon",llemon);
+        cv.put("jsoda",jsoda);
+        cv.put("sSoda",sSoda);
+        cv.put("water",water);
+        cv.put("lassi",lassi);
+        cv.put("vanilla",vanilla);
+        cv.put("pista",pista);
+        cv.put("stwbry",stwbry);
+        cv.put("mango",mango);
+        cv.put("btrsch",btrsch);
+        cv.put("kulfi",kulfi);
+        cv.put("cbar",cbar);
+        cv.put("fpack",fpack);
+        cv.put("other",other);
+        cv.put("other1",other1);
+        cv.put("total",total);
+        cv.put("addedondatetime", String.valueOf(addedDateTime));
+        cv.put("date", String.valueOf(date));
+        System.out.println(cv);
+        db.insert("t_bill",null,cv);
+    }
+
+    public int getLatestBillNo() {
+        int latestBillNo = 0;
+        Cursor res = db.rawQuery("select MAX(billNo) from t_bill",null);
+        if(res.getCount()>0){
+            while(res.moveToNext()){
+                latestBillNo = Integer.parseInt(String.valueOf(res.getInt(0)));
+            }
+        }else{
+            latestBillNo = 0;
+        }
+        return latestBillNo;
+    }
+
+    public void clearBill() {
+        db.execSQL("delete from t_bill");
+    }
+
+    public Cursor findRangeForExp(String fromStr, String toStr) {
+        String str = "select * from t_expense where date between \'"+fromStr+"\' and \'"+toStr+"\'";
+        Cursor res = db.rawQuery(str,null);
+        return res;
     }
 }
 

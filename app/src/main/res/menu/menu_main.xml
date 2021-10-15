@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.mytabs.MainActivity"
+    >
+    <item
+        android:id="@+id/action_backup"
+        android:title="Backup"
+        />
+
+    <item
+        android:id="@+id/action_restore"
+        android:title="Restore"/>
+    <item
+        android:id="@+id/action_sendMail"
+        android:title="Backup via Mail"/>
+
+    <item
+        android:id="@+id/action_openDoc"
+        android:title="Find Document"/>
+
+</menu>

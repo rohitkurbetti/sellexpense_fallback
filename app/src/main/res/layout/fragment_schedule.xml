@@ -1,63 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ScheduleFragment">
 
-    <TextClock
-        android:id="@+id/textClock"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:format12Hour="hh:mm:ss a"
-        android:gravity="center_horizontal"
-        android:textColor="#d41709"
-        android:textSize="20sp"
-        android:textStyle="bold" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/tt"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:id="@+id/selectedTime"
-        android:text="00 : 00"
-        android:layout_marginTop="200dp"
+        android:gravity="center_horizontal"
+        android:text="Select Date"
         android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="46sp"
-        android:gravity="center_horizontal">
+        android:textSize="40sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints">
 
     </TextView>
 
+    <TableLayout
+        android:id="@+id/tablett"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tt"
+        tools:ignore="MissingConstraints">
 
-    <Button
-        android:id="@+id/selectTimeBtn"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginTop="36dp"
-        android:text="Set time"
-        android:textSize="22dp"
-        android:layout_marginHorizontal="26dp"
-        ></Button>
+        <TableRow>
 
-    <Button
-        android:id="@+id/setAlarmBtn"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginTop="36dp"
-        android:text="Set Alarm"
-        android:textSize="22dp"
-        android:layout_marginHorizontal="26dp"
-        ></Button>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="70dp"
+                android:text="Prev Balance"
+                android:textSize="20dp"></TextView>
 
-    <Button
-        android:id="@+id/cancelAlarmBtn"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginTop="36dp"
-        android:text="Cancel"
-        android:textSize="22dp"
-        android:layout_marginHorizontal="26dp"
-        ></Button>
+            <TextView
+                android:id="@+id/tvPrevBal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="70dp"
+                android:paddingLeft="5dp"
+                android:text=" Prev Bal"
+                android:textSize="20dp"></TextView>
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Todays Selling"
+                android:textSize="20dp"></TextView>
+
+            <TextView
+                android:id="@+id/tvSelling"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:paddingLeft="5dp"
+                android:text=" Todays Selling"
+                android:textSize="20dp"></TextView>
+
+        </TableRow>
 
 
-</FrameLayout>
+        <TableRow>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Expenses"
+                android:textSize="20dp"></TextView>
+
+            <EditText
+                android:id="@+id/etExp"
+                android:layout_width="273dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:hint="Expenses"
+                android:inputType="number"
+                android:paddingLeft="5dp"
+                android:textSize="20dp"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+
+                android:text="Profit"
+                android:textSize="20dp"></TextView>
+
+            <TextView
+                android:id="@+id/tvProfit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:paddingLeft="5dp"
+                android:text=" 0"
+                android:textSize="20dp"></TextView>
+
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/btnCommit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_span="2"
+                android:tooltipText="Tap and Hold to View Expense"
+                android:layout_marginRight="5dp"
+                android:text="Save">
+
+            </Button>
+        </TableRow>
+    </TableLayout>
+
+    <EditText
+        android:id="@+id/editTextNumber"
+        android:layout_width="341dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="32dp"
+        android:ems="10"
+        android:hint="Enter Expense No"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tablett" />
+
+    <ImageButton
+        android:id="@+id/button4"
+        android:layout_width="128dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="20dp"
+        android:text="Edit"
+        android:tooltipText="Edit an Expense Record"
+        android:src="@drawable/ic_baseline_edit_24"
+        app:layout_constraintEnd_toStartOf="@+id/button6"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNumber" />
+
+    <ImageButton
+        android:id="@+id/button6"
+        android:layout_width="125dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="32dp"
+        android:text="Delete"
+        android:tooltipText="Delete an Expense Record"
+        android:src="@drawable/ic_baseline_delete_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/button4"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNumber" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

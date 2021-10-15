@@ -116,13 +116,13 @@ public class ThirdFragment extends Fragment {
     EditText editBillNo;
     EditText btnCommit;
     EditText etcName;
-    EditText etDelBillNo;
     Button btnDelBillNo;
     TableLayout t;
     int billno;
     int grandTotal=0;
     Cursor res;
     String customerName;
+    Spinner spinner;
     TextView currDate1,tvTotal,srno1;
     int vanillau1,pistau1,stwbryu1,btrschu1,kulfiu1,cbaru1,fpacku1,otheru1,other1u1,mangou1,orangeu1,kokamu1,sarbatu1,lemonu1,lsodau1,ssrbtu1,walau1,wateru1,lassiu1,pachaku1,lorangeu1,llemonu1,jsodau1,ssodau1;
     private DbManager db;
@@ -136,7 +136,7 @@ public class ThirdFragment extends Fragment {
         ((MainActivity) getActivity()).f3 = this;
         prefs = getLayoutInflater().getContext().getSharedPreferences("d",MODE_PRIVATE);
         editor = prefs.edit();
-        Spinner spinner = view.findViewById(R.id.spinner);
+        spinner = view.findViewById(R.id.spinner);
         fromDate = view.findViewById(R.id.fromDate);
         toDate = view.findViewById(R.id.toDate);
         Button btnVew = view.findViewById(R.id.btnView);
@@ -146,7 +146,6 @@ public class ThirdFragment extends Fragment {
         }
         editBillNo = view.findViewById(R.id.editBillNo);
         btnDelBillNo = view.findViewById(R.id.btnDelBillNo);
-        etDelBillNo = view.findViewById(R.id.etBillNo);
         currDate1 = view.findViewById(R.id.currDate);
         tvTotal = view.findViewById(R.id.total1);
         srno1 = view.findViewById(R.id.serialNo);
@@ -156,6 +155,8 @@ public class ThirdFragment extends Fragment {
         items.add("Date Wise");
         items.add("Name Wise");
         items.add("Bill Wise");
+        items.add("Expenses");
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, items);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
@@ -174,8 +175,8 @@ public class ThirdFragment extends Fragment {
         btnDelBillNo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!etDelBillNo.getText().toString().isEmpty() && !etDelBillNo.getText().toString().equals("0")){
-                    int billNo = Integer.parseInt(etDelBillNo.getText().toString());
+                if(!editBillNo.getText().toString().isEmpty() && !editBillNo.getText().toString().equals("0")){
+                    int billNo = Integer.parseInt(editBillNo.getText().toString());
                     res = db.getOne(billNo);
                     if(res.getCount() > 0){
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -196,7 +197,7 @@ public class ThirdFragment extends Fragment {
                         });
                         AlertDialog dialog = builder.create();
                         dialog.show();
-                        etDelBillNo.setText("");
+                        editBillNo.setText("");
                     }else{
                         Toast.makeText(getContext(), "No Bill Found", Toast.LENGTH_SHORT).show();
                     }
@@ -482,9 +483,8 @@ public class ThirdFragment extends Fragment {
         btnVew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Cursor res = null;
-                final View customView = getLayoutInflater().inflate(R.layout.custom_table_ext, null);
+                View customView = getLayoutInflater().inflate(R.layout.custom_table_ext, null);
                 TableLayout tableLayout = customView.findViewById(R.id.table_layout);
                 boolean isDarkThemeOn = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
                 TextView tb0 = customView.findViewById(R.id.billno);
@@ -1035,7 +1035,7 @@ public class ThirdFragment extends Fragment {
 //                                sb.append(res.getInt(1)+"  "+res.getInt(18)+"  "+res.getString(19)+"\n");
                                 sb.append("Total: " + res.getInt(27));
                                 TableRow tableRow = new TableRow(customView.getContext());
-                                tableRow.setPadding(10, 10, 10, 10);
+                                tableRow.setPadding(10, 0, 10, 0);
                                 TextView tv1 = new TextView(customView.getContext());
                                 tv1.setText(String.valueOf(res.getInt(1)));
                                 tv1.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -1510,6 +1510,95 @@ public class ThirdFragment extends Fragment {
                     } else {
                         Toast.makeText(getContext(), "Enter valid billno", Toast.LENGTH_SHORT).show();
                     }
+                } else if(spinner.getSelectedItem().equals("Expenses")){
+                    int totalSell = 0,totalExp=0,totalPro=0;
+                    res = db.findRangeForExp(fromDateFmt,toDateFmt);
+                    customView = getLayoutInflater().inflate(R.layout.expense, null);
+                    tableLayout = customView.findViewById(R.id.table_layout);
+                    isDarkThemeOn = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+
+                    tb0 = customView.findViewById(R.id.billno);
+                    tb1 = customView.findViewById(R.id.kokam);
+                    tb2 = customView.findViewById(R.id.lemon);
+                    tb3 = customView.findViewById(R.id.sarbat);
+                    tb4 = customView.findViewById(R.id.ssarbat);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("Expense Data");
+                    builder.setView(customView);
+                    if (res.getCount() > 0) {
+                        while (res.moveToNext()) {
+                            totalSell += Integer.parseInt(String.valueOf(res.getInt(1)));
+                            totalExp += Integer.parseInt(String.valueOf(res.getInt(2)));
+                            totalPro += Integer.parseInt(String.valueOf(res.getInt(3)));
+//                    sb.append(res.getInt(1)+"  "+res.getInt(18)+"  "+res.getString(19)+"\n");
+//                    total += res.getInt(27);
+                            TableRow tableRow = new TableRow(customView.getContext());
+                            tableRow.setPadding(10, 10, 10, 10);
+
+                            TextView tv1 = new TextView(customView.getContext());
+                            tv1.setText(String.valueOf(res.getInt(0)));
+                            tv1.setGravity(Gravity.CENTER_HORIZONTAL);
+
+                            TextView cname1 = new TextView(customView.getContext());
+                            cname1.setText(String.valueOf(res.getInt(1)));
+                            cname1.setGravity(Gravity.CENTER_HORIZONTAL);
+
+                            TextView tv2 = new TextView(customView.getContext());
+                            tv2.setText(String.valueOf(res.getInt(2)));
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                tv2.setTooltipText(String.valueOf(res.getString(5)));
+                            }
+                            tv2.setGravity(Gravity.CENTER_HORIZONTAL);
+
+                            TextView tv3 = new TextView(customView.getContext());
+                            tv3.setText(String.valueOf(res.getInt(3)));
+                            tv3.setGravity(Gravity.CENTER_HORIZONTAL);
+
+                            TextView tv4 = new TextView(customView.getContext());
+                            tv4.setText(String.valueOf(res.getString(4)));
+                            tv4.setGravity(Gravity.CENTER_HORIZONTAL);
+
+
+                            if (isDarkThemeOn) {
+                                cname1.setTextColor(Color.WHITE);
+                                tb0.setTextColor(Color.WHITE);
+                                tb1.setTextColor(Color.WHITE);
+                                tb2.setTextColor(Color.WHITE);
+                                tb3.setTextColor(Color.WHITE);
+                                tb4.setTextColor(Color.WHITE);
+
+                            } else {
+                                cname1.setTextColor(Color.BLACK);
+                                tb0.setTextColor(Color.BLACK);
+                                tb1.setTextColor(Color.BLACK);
+                                tb2.setTextColor(Color.BLACK);
+                                tb3.setTextColor(Color.BLACK);
+                                tb4.setTextColor(Color.BLACK);
+                            }
+                            tableRow.addView(tv1);
+                            tableRow.addView(cname1);
+                            tableRow.addView(tv2);
+                            tableRow.addView(tv3);
+                            tableRow.addView(tv4);
+//                    }
+                            tableLayout.addView(tableRow);
+                        }
+                    } else {
+//                    Toast.makeText(getContext(), "No data found", Toast.LENGTH_SHORT).show();
+                        TextView tvNoData = new TextView(customView.getContext());
+                        tvNoData.setText(String.valueOf("No data found"));
+                        tvNoData.setGravity(Gravity.CENTER_HORIZONTAL);
+
+                        TableRow tableRow = new TableRow(customView.getContext());
+                        tableRow.setPadding(10, 10, 10, 10);
+                        tableRow.setGravity(Gravity.CENTER_HORIZONTAL);
+                        tableRow.addView(tvNoData);
+
+                        tableLayout.addView(tableRow);
+                    }
+                    builder.setMessage("TotalSelling:"+totalSell+"\nTotalExpense:"+totalExp+"\nTotalProfit:"+totalPro);
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                 } else {
                     Toast.makeText(getActivity(), "Enter valid details", Toast.LENGTH_SHORT).show();
                 }
@@ -1543,6 +1632,11 @@ public class ThirdFragment extends Fragment {
                         billName.setText(null);
                     }
                     break;
+                    case 3: {
+                        fromDate.setEnabled(true);
+                        toDate.setEnabled(true);
+                        break;
+                    }
                 }
             }
 
@@ -1900,155 +1994,291 @@ public class ThirdFragment extends Fragment {
         if (fromDate.getText().toString().equals("From date") || toDate.getText().toString().equals("To date")) {
             Toast.makeText(getContext(), "Please select Date", Toast.LENGTH_SHORT).show();
         } else {
-            Cursor res = db.findRange(String.valueOf(fromDateFmt) , String.valueOf(toDateFmt));
-            if (res.getCount() > 0) {
-                String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
-                System.out.println(path);
-                Date date = new Date();
-                String datePattern = "dd/MM/yyyy";
-                String fileSaveDatePattern = "yyMMddhhmmss";
-                SimpleDateFormat datFormatForFileSave = new SimpleDateFormat(fileSaveDatePattern);
-                String fileExt = datFormatForFileSave.format(date.getTime());
-                File file = new File(path, "report_" + fileExt + ".pdf");
-                OutputStream outputStream = new FileOutputStream(file);
 
-                PdfWriter pdfWriter = new PdfWriter(file);
-                PdfDocument pdfDocument = new PdfDocument(pdfWriter);
-                Document document = new Document(pdfDocument);
-                pdfDocument.setDefaultPageSize(PageSize.A4.rotate());
-                document.setMargins(20f, 10f, 10f, 10f);
+            if(spinner.getSelectedItem().equals("Expenses")){
+                Cursor res = db.findRangeForExp(String.valueOf(fromDateFmt) , String.valueOf(toDateFmt));
+                if(res.getCount()>0){
+                    String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+                    Date date = new Date();
+                    String datePattern = "dd/MM/yyyy";
+                    String fileSaveDatePattern = "yyMMddhhmmss";
+                    SimpleDateFormat datFormatForFileSave = new SimpleDateFormat(fileSaveDatePattern);
+                    String fileExt = datFormatForFileSave.format(date.getTime());
+                    File file1 = new File(path, "ExpenseReport_" + fileExt + ".pdf");
+                    OutputStream outputStream = new FileOutputStream(file1);
+
+                    PdfWriter pdfWriter = new PdfWriter(file1);
+                    PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+                    Document document = new Document(pdfDocument);
+                    pdfDocument.setDefaultPageSize(PageSize.Default.rotate());
+                    document.setMargins(20f, 10f, 10f, 10f);
+
+                    Paragraph p2 = new Paragraph("Expense Reports\nFrom date:" + fromDate.getText().toString() + " To date:" + toDate.getText().toString()).setBold().setFontSize(15).setTextAlignment(TextAlignment.CENTER);
+                    float[] columnWidth = {20f, 35f, 35f, 35f,65f,180f};
+                    Table table = new Table(columnWidth);
+                    int n = 9;
+                    int sellingSum=0,expenseSum=0,profitSum=0;
+                    table.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                    table.setFontSize(n);
+                    int m = 8;
+                    table.setTextAlignment(TextAlignment.CENTER);
+                    table.setVerticalAlignment(VerticalAlignment.MIDDLE);
+
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(0))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(1))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(2))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(3))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(4))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(5))).setBold())).setFontSize(m);
+
+                    while(res.moveToNext()){
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(0)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(1)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(2)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(3)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(4)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(5)))));
+
+                        sellingSum = sellingSum + res.getInt(1);
+                        expenseSum = expenseSum + res.getInt(2);
+                        profitSum = profitSum + res.getInt(3);
+                    }
+
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf("Total")).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(sellingSum)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(expenseSum)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(profitSum)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf("-")).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf("-")).setBold()));
+
+                    Paragraph totalFinal = new Paragraph("\nRecord Found: " + res.getCount() + "\nTotalProfit: " + profitSum).setBold().setFontSize(12).setTextAlignment(TextAlignment.LEFT).setMarginLeft(30f);
+//                    document.add(paragraph);
+                    document.add(p2);
+                    document.add(table);
+                    document.add(totalFinal);
+                    document.close();
+                    Toast.makeText(getContext(), "Expense Reports generated successfully", Toast.LENGTH_SHORT).show();
+                    sellingSum = 0;
+                    expenseSum = 0;
+                    profitSum = 0;
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("View");
+                    builder.setMessage("Do you want to view Pdf Document?");
+                    builder.setPositiveButton("View", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            try {
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                File file1 = new File(path, "/ExpenseReport_" + fileExt + ".pdf");
+                                Uri uri;
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    uri = FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID + ".provider", file1);
+                                } else {
+                                    uri = Uri.fromFile(file1);
+                                }
+                                intent.setDataAndType(uri, "application/pdf");
+                                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                startActivity(Intent.createChooser(intent, "Open With .."));
+                            } catch (Exception ex) {
+                                Toast.makeText(getContext(), String.valueOf(ex), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+
+                }else{
+                    Toast.makeText(getContext(), "No data found", Toast.LENGTH_SHORT).show();
+                }
+            }else{
+                Cursor res = db.findRange(String.valueOf(fromDateFmt) , String.valueOf(toDateFmt));
+                if (res.getCount() > 0) {
+                    String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+                    System.out.println(path);
+                    Date date = new Date();
+                    String datePattern = "dd/MM/yyyy";
+                    String fileSaveDatePattern = "yyMMddhhmmss";
+                    SimpleDateFormat datFormatForFileSave = new SimpleDateFormat(fileSaveDatePattern);
+                    String fileExt = datFormatForFileSave.format(date.getTime());
+                    File file = new File(path, "report_" + fileExt + ".pdf");
+                    OutputStream outputStream = new FileOutputStream(file);
+
+                    PdfWriter pdfWriter = new PdfWriter(file);
+                    PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+                    Document document = new Document(pdfDocument);
+                    pdfDocument.setDefaultPageSize(PageSize.A4.rotate());
+                    document.setMargins(20f, 10f, 10f, 10f);
 //                document.setProperty(Property.LEADING, new Leading(Leading.MULTIPLIED, 1.2f));
-                //image logic
+                    //image logic
 
 
-                //
+                    //
 
 //                Paragraph paragraph = new Paragraph("Reports").setBold().setFontSize(18).setTextAlignment(TextAlignment.CENTER);
 
-                Paragraph p2 = new Paragraph("Reports\nFrom date:" + fromDate.getText().toString() + " To date:" + toDate.getText().toString()).setBold().setFontSize(15).setTextAlignment(TextAlignment.CENTER);
+                    Paragraph p2 = new Paragraph("Reports\nFrom date:" + fromDate.getText().toString() + " To date:" + toDate.getText().toString()).setBold().setFontSize(15).setTextAlignment(TextAlignment.CENTER);
 
-                float[] columnWidth = {15f, 65f, 15f, 15f,15f,15f, 15f,15f,15f,15f, 15f, 15f, 15f, 15f,15f, 15f, 15f, 15f, 15f, 15f,15f, 15f, 15f, 15f, 15f, 15f, 20f, 40f};
-                Table table = new Table(columnWidth);
-                int n = 9;
-                int total = 0, fpack=0,other = 0, other1 = 0,water = 0 , lassi = 0 ,cbar = 0,jsoda = 0, sSoda = 0 ,orange = 0, lemon = 0, kokam = 0, pachak = 0, ssrbt = 0, sarbat = 0, wala = 0, vanilla = 0, pista = 0, stwbry = 0, btrsch = 0, mango = 0, lsoda = 0, llemon = 0, lorange = 0,kulfi=0;
-                table.setHorizontalAlignment(HorizontalAlignment.CENTER);
-                table.setFontSize(n);
-                int m = 8;
-                table.setTextAlignment(TextAlignment.CENTER);
-                table.setVerticalAlignment(VerticalAlignment.MIDDLE);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf("No")).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph("Name").setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(3))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(4))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(5))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(6))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(7))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(8))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(9))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(10))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(11))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(12))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(13))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(14))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(15))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(16))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(17))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(18))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(19))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(20))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(21))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(22))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(23))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(24))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(25))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(26))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(27))).setBold())).setFontSize(m);
-                table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf("Date Time")).setBold())).setFontSize(m);
+                    float[] columnWidth = {15f, 65f, 15f, 15f,15f,15f, 15f,15f,15f,15f, 15f, 15f, 15f, 15f,15f, 15f, 15f, 15f, 15f, 15f,15f, 15f, 15f, 15f, 15f, 15f, 20f, 40f};
+                    Table table = new Table(columnWidth);
+                    int n = 9;
+                    int total = 0, fpack=0,other = 0, other1 = 0,water = 0 , lassi = 0 ,cbar = 0,jsoda = 0, sSoda = 0 ,orange = 0, lemon = 0, kokam = 0, pachak = 0, ssrbt = 0, sarbat = 0, wala = 0, vanilla = 0, pista = 0, stwbry = 0, btrsch = 0, mango = 0, lsoda = 0, llemon = 0, lorange = 0,kulfi=0;
+                    table.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                    table.setFontSize(n);
+                    int m = 8;
+                    table.setTextAlignment(TextAlignment.CENTER);
+                    table.setVerticalAlignment(VerticalAlignment.MIDDLE);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf("No")).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph("Name").setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(3))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(4))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(5))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(6))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(7))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(8))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(9))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(10))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(11))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(12))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(13))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(14))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(15))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(16))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(17))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(18))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(19))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(20))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(21))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(22))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(23))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(24))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(25))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(26))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(27))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf("Date Time")).setBold())).setFontSize(m);
 
-                while (res.moveToNext()) {
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(1)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(2)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(3)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(4)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(5)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(6)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(7)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(8)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(9)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(10)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(11)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(12)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(13)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(14)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(15)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(16)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(17)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(18)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(19)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(20)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(21)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(22)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(23)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(24)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(25)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(26)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(27))).setBold()));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(28)))));
-                    orange = orange + res.getInt(3);
-                    kokam = kokam + res.getInt(4);
-                    lemon = lemon + res.getInt(5);
-                    sarbat = sarbat + res.getInt(6);
-                    pachak = pachak + res.getInt(7);
-                    wala = wala + res.getInt(8);
-                    lsoda = lsoda + res.getInt(9);
-                    ssrbt = ssrbt + res.getInt(10);
-                    lorange = lorange + res.getInt(11);
-                    llemon = llemon + res.getInt(12);
-                    jsoda = jsoda + res.getInt(13);
-                    sSoda = sSoda + res.getInt(14);
-                    water = water + res.getInt(15);
-                    lassi = lassi + res.getInt(16);
-                    vanilla = vanilla + res.getInt(17);
-                    pista = pista + res.getInt(18);
-                    stwbry = stwbry + res.getInt(19);
-                    mango = mango + res.getInt(20);
-                    btrsch = btrsch + res.getInt(21);
-                    kulfi = kulfi + res.getInt(22);
-                    cbar = cbar + res.getInt(23);
-                    fpack = fpack + res.getInt(24);
-                    other = other + res.getInt(25);
-                    other1 = other1 + res.getInt(26);
-                    total = total + res.getInt(27);
-                }
+                    while (res.moveToNext()) {
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(1)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(2)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(3)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(4)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(5)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(6)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(7)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(8)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(9)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(10)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(11)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(12)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(13)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(14)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(15)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(16)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(17)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(18)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(19)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(20)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(21)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(22)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(23)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(24)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(25)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(26)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(27))).setBold()));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(28)))));
+                        orange = orange + res.getInt(3);
+                        kokam = kokam + res.getInt(4);
+                        lemon = lemon + res.getInt(5);
+                        sarbat = sarbat + res.getInt(6);
+                        pachak = pachak + res.getInt(7);
+                        wala = wala + res.getInt(8);
+                        lsoda = lsoda + res.getInt(9);
+                        ssrbt = ssrbt + res.getInt(10);
+                        lorange = lorange + res.getInt(11);
+                        llemon = llemon + res.getInt(12);
+                        jsoda = jsoda + res.getInt(13);
+                        sSoda = sSoda + res.getInt(14);
+                        water = water + res.getInt(15);
+                        lassi = lassi + res.getInt(16);
+                        vanilla = vanilla + res.getInt(17);
+                        pista = pista + res.getInt(18);
+                        stwbry = stwbry + res.getInt(19);
+                        mango = mango + res.getInt(20);
+                        btrsch = btrsch + res.getInt(21);
+                        kulfi = kulfi + res.getInt(22);
+                        cbar = cbar + res.getInt(23);
+                        fpack = fpack + res.getInt(24);
+                        other = other + res.getInt(25);
+                        other1 = other1 + res.getInt(26);
+                        total = total + res.getInt(27);
+                    }
 
-                table.addCell(new Cell().add(new Paragraph(String.valueOf("Total")).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf("-"))));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(orange)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(kokam)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(lemon)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(sarbat)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(pachak)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(wala)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(ssrbt)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(lsoda)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(lorange)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(llemon)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(jsoda)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(sSoda)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(water)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(lassi)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(vanilla)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(pista)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(stwbry)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(mango)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(btrsch)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(kulfi)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(cbar)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(fpack)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(other)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(other1)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(total)).setBold()));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf("-"))));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf("Total")).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf("-"))));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(orange)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(kokam)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(lemon)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(sarbat)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(pachak)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(wala)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(lsoda)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(ssrbt)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(lorange)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(llemon)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(jsoda)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(sSoda)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(water)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(lassi)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(vanilla)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(pista)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(stwbry)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(mango)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(btrsch)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(kulfi)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(cbar)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(fpack)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(other)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(other1)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(total)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf("-"))));
+
+                    //showing quantities of each
+
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf("Qty")).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf("-"))));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(orange/prefs.getInt("orange", 15))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(kokam/prefs.getInt("kokam", 20))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(lemon/prefs.getInt("lemon", 15))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(sarbat/prefs.getInt("sarbat", 15))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(pachak/prefs.getInt("pachak", 20))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(wala/prefs.getInt("wala", 15))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(lsoda/prefs.getInt("lsoda", 15))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(ssrbt/prefs.getInt("ssrbt", 20))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(lorange/prefs.getInt("lorange", 20))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(llemon/prefs.getInt("llemon", 20))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(jsoda/prefs.getInt("jsoda",15))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(sSoda/prefs.getInt("ssoda",15))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(water/prefs.getInt("water",10))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(lassi/prefs.getInt("lassi",20))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(vanilla/prefs.getInt("vanilla",10))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(pista/prefs.getInt("pista",15))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(stwbry/prefs.getInt("sbry",10))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(mango/prefs.getInt("mango",20))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(btrsch/prefs.getInt("btrsch",20))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(kulfi/prefs.getInt("kulfi",10))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(cbar/prefs.getInt("cbar",10))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(fpack/prefs.getInt("fpack",100))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(other)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(other1)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf("-")).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf("-"))));
 
 //        table.addCell(new Cell().add(new Paragraph("Name")));
 //        table.addCell(new Cell().add(new Paragraph("Rohit")));
@@ -2065,72 +2295,72 @@ public class ThirdFragment extends Fragment {
 //
 //        }
 
-                Paragraph totalFinal = new Paragraph("\nRecord Found: " + res.getCount() + "\nTotal: " + total).setBold().setFontSize(12).setTextAlignment(TextAlignment.LEFT).setMarginLeft(30f);
+                    Paragraph totalFinal = new Paragraph("\nRecord Found: " + res.getCount() + "\nTotal: " + total).setBold().setFontSize(12).setTextAlignment(TextAlignment.LEFT).setMarginLeft(30f);
 //                document.add(paragraph);
-                document.add(p2);
-                document.add(table);
-                document.add(totalFinal);
-                document.close();
-                Toast.makeText(getContext(), "Reports file generated successfully", Toast.LENGTH_SHORT).show();
-                total = 0;
-                orange = 0;
-                lemon = 0;
-                kokam = 0;
-                pachak = 0;
-                ssrbt = 0;
-                sarbat = 0;
-                wala = 0;
-                jsoda = 0;
-                sSoda = 0;
-                water = 0;
-                lassi = 0;
-                vanilla = 0;
-                pista = 0;
-                stwbry = 0;
-                btrsch = 0;
-                mango = 0;
-                kulfi = 0;
-                lsoda = 0;
-                llemon = 0;
-                lorange = 0;
-                other = 0;
-                other1 = 0;
-                fpack = 0;
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("View");
-                builder.setMessage("Do you want to view Pdf Document?");
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            Intent intent = new Intent(Intent.ACTION_VIEW);
-                            File file1 = new File(path, "/report_" + fileExt + ".pdf");
-                            Uri uri;
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                uri = FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID + ".provider", file1);
-                            } else {
-                                uri = Uri.fromFile(file1);
+                    document.add(p2);
+                    document.add(table);
+                    document.add(totalFinal);
+                    document.close();
+                    Toast.makeText(getContext(), "Reports file generated successfully", Toast.LENGTH_SHORT).show();
+                    total = 0;
+                    orange = 0;
+                    lemon = 0;
+                    kokam = 0;
+                    pachak = 0;
+                    ssrbt = 0;
+                    sarbat = 0;
+                    wala = 0;
+                    jsoda = 0;
+                    sSoda = 0;
+                    water = 0;
+                    lassi = 0;
+                    vanilla = 0;
+                    pista = 0;
+                    stwbry = 0;
+                    btrsch = 0;
+                    mango = 0;
+                    kulfi = 0;
+                    lsoda = 0;
+                    llemon = 0;
+                    lorange = 0;
+                    other = 0;
+                    other1 = 0;
+                    fpack = 0;
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("View");
+                    builder.setMessage("Do you want to view Pdf Document?");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            try {
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                File file1 = new File(path, "/report_" + fileExt + ".pdf");
+                                Uri uri;
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    uri = FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID + ".provider", file1);
+                                } else {
+                                    uri = Uri.fromFile(file1);
+                                }
+                                intent.setDataAndType(uri, "application/pdf");
+                                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                startActivity(Intent.createChooser(intent, "Open With .."));
+                            } catch (Exception ex) {
+                                Toast.makeText(getContext(), String.valueOf(ex), Toast.LENGTH_SHORT).show();
                             }
-                            intent.setDataAndType(uri, "application/pdf");
-                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            startActivity(Intent.createChooser(intent, "Open With .."));
-                        } catch (Exception ex) {
-                            Toast.makeText(getContext(), String.valueOf(ex), Toast.LENGTH_SHORT).show();
                         }
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
 
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            } else {
-                Toast.makeText(getContext(), "No Record Found", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                } else {
+                    Toast.makeText(getContext(), "No Record Found", Toast.LENGTH_SHORT).show();
+                }
             }
         }
-
     }
 }

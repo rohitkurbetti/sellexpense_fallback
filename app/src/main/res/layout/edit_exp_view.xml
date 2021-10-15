@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp">
+    <ScrollView android:layout_height="match_parent"
+        android:layout_width="match_parent">
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="450dp"
+
+            android:orientation="horizontal"
+            android:padding="2dp"
+            tools:ignore="MissingConstraints">
+
+            <TableRow android:orientation="vertical"
+                android:layout_marginHorizontal="1dp"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="5"
+                    android:gravity="center_horizontal"
+                    android:text="Selling"
+                    android:textAlignment="center"></TextView>
+
+                <EditText
+                    android:id="@+id/expSelling"
+                    android:layout_width="302dp"
+                    android:maxEms="16"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Selling"
+                    android:inputType="number"></EditText>
+
+            </TableRow>
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="5"
+                    android:gravity="center_horizontal"
+                    android:text="Expense"
+                    android:textAlignment="center"></TextView>
+
+                <EditText
+                    android:id="@+id/expExpense"
+                    android:layout_width="302dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Expense"
+                    android:inputType="number"></EditText>
+
+            </TableRow>
+
+
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="5"
+                    android:gravity="center_horizontal"
+                    android:text="Profit"
+                    android:textAlignment="center"></TextView>
+
+                <EditText
+                    android:id="@+id/expProfit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Profit"
+                    android:textIsSelectable="false"
+                    android:focusable="false"
+                    android:inputType="none"></EditText>
+
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="5"
+                    android:gravity="center_horizontal"
+                    android:text="Date"
+                    android:textAlignment="center"></TextView>
+
+                <TextView
+                    android:id="@+id/expDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="3dp"
+                    android:textSize="20sp"
+                    android:hint="select Date"
+                    android:inputType="number"></TextView>
+
+            </TableRow>
+        </TableLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
