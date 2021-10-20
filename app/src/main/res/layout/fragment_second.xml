@@ -458,6 +458,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="36dp"
+                android:focusable="false"
                 android:ems="10"
                 android:hint="Other"
                 android:inputType="number|phone"

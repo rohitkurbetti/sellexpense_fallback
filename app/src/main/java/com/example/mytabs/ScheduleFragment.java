@@ -444,6 +444,7 @@ public class ScheduleFragment extends Fragment {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Add/Remove Items");
+                builder.setCancelable(false);
                 final View customItems = getLayoutInflater().inflate(R.layout.custom_items,null);
                 ImageButton btnAdd = customItems.findViewById(R.id.button7);
                 ImageButton btnDel = customItems.findViewById(R.id.button8);

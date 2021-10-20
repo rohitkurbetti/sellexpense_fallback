@@ -608,6 +608,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
+                android:focusable="false"
                 android:ems="10"
                 android:hint="Other"
                 android:inputType="number"

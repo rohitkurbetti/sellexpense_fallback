@@ -15,9 +15,14 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SecondFragment extends Fragment {
+    StringBuilder sbTemp1;
     Long billNo_generated = 0L;
     final int DEF_MAX = 25;
     int finalTotal = 0;
@@ -67,6 +73,9 @@ public class SecondFragment extends Fragment {
 
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
+    HashMap<String, Integer> itemsBill2;
+    int custItems1;
+
     public SecondFragment() {
         // Required empty public constructor
     }
@@ -165,6 +174,141 @@ public class SecondFragment extends Fragment {
         TextView tv22 = view.findViewById(R.id.textView22);
 
         etOther1 = view.findViewById(R.id.editTextPhone2);
+
+        etOther1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Add/Remove Items");
+                builder.setCancelable(false);
+                final View customItems = getLayoutInflater().inflate(R.layout.custom_items,null);
+                ImageButton btnAdd = customItems.findViewById(R.id.button7);
+                ImageButton btnDel = customItems.findViewById(R.id.button8);
+                EditText etAddItemName = customItems.findViewById(R.id.editTextTextPersonName2);
+                EditText etAddValue = customItems.findViewById(R.id.editTextNumber2);
+                Spinner spinner = customItems.findViewById(R.id.spinner2);
+                TextView textView33 = customItems.findViewById(R.id.textView33);
+                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, android.R.id.text1);
+                spinner.setSelection(Adapter.NO_SELECTION);
+                spinnerAdapter.add("Select Item");
+                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(spinnerAdapter);
+//                spinnerAdapter.remove((String) spinner.getSelectedItem());
+                itemsBill2 = new HashMap<>();
+
+                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        System.out.println(spinnerAdapter.getItem(position));
+                        for(Map.Entry<String,Integer> m : itemsBill2.entrySet()){
+                            if(spinner.getSelectedItem().equals(m.getKey())){
+                                etAddItemName.setText(String.valueOf(m.getKey()));
+                                etAddValue.setText(String.valueOf(m.getValue()));
+                                break;
+                            }else{
+                                etAddItemName.setText(String.valueOf(""));
+                                etAddValue.setText(String.valueOf(""));
+                            }
+                        }
+
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+
+                btnAdd.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(!etAddItemName.getText().toString().isEmpty() && !etAddValue.getText().toString().isEmpty()){
+                            String itemName = etAddItemName.getText().toString();
+                            Integer itemVal = Integer.parseInt(etAddValue.getText().toString());
+                            itemsBill2.put(itemName,itemVal);
+                            System.out.println(itemsBill2.entrySet());
+                            spinnerAdapter.clear();
+                            for(Map.Entry<String,Integer> m : itemsBill2.entrySet()){
+                                spinnerAdapter.add(m.getKey());
+                            }
+                            etAddItemName.setText("");
+                            etAddValue.setText("");
+                        }
+                        StringBuilder sb = new StringBuilder();
+                        int z = 0;
+                        for(Map.Entry<String,Integer> i : itemsBill2.entrySet()){
+                            sb.append(i.getKey()+" "+i.getValue()+"\n");
+                            z = z + i.getValue();
+                        }
+                        sb.append("---------\nTotal:"+z);
+                        textView33.setText(sb);
+                    }
+                });
+
+                btnDel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String selectedItem = (String)spinner.getSelectedItem();
+                        spinnerAdapter.remove(selectedItem);
+                        itemsBill2.remove(selectedItem);
+                        if(itemsBill2.containsKey(selectedItem)){
+                            itemsBill2.remove(selectedItem);
+                        }else{
+                            etAddItemName.setText("");
+                            etAddValue.setText("");
+                        }
+                        StringBuilder sb = new StringBuilder();
+                        int f=0;
+                        for(Map.Entry<String,Integer> i : itemsBill2.entrySet()){
+                            sb.append(i.getKey()+"->"+i.getValue()+"\n");
+                            f = f + i.getValue();
+                        }
+                        sb.append("---------\nTotal:"+f);
+                        textView33.setText(sb);
+                    }
+                });
+                builder.setView(customItems);
+                builder.setCancelable(false);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        custItems1 = 0;
+                        for(Map.Entry<String,Integer> m : itemsBill2.entrySet()){
+                            if(itemsBill2.size()>0){
+                                custItems1 = custItems1 + m.getValue();
+                            }else{
+                                custItems1 = 0;
+                            }
+                        }
+                        System.out.println(custItems1);
+                        if(itemsBill2.size()>0){
+                            sbTemp1 = new StringBuilder();
+                            sbTemp1.append("[");
+                            for(Map.Entry<String,Integer> i : itemsBill2.entrySet()){
+                                sbTemp1.append(i.getKey()+"="+i.getValue()+" ");
+                            }
+                            sbTemp1.append("]");
+                        }
+                        popUpTotal(custItems1);
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        itemsBill2.clear();
+                        etOther1.setText("");
+                        spinnerAdapter.clear();
+                        etAddItemName.setText("");
+                        etAddValue.setText("");
+                    }
+                });
+
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
 
         etOther1.addTextChangedListener(new TextWatcher() {
             @Override
@@ -886,6 +1030,16 @@ public class SecondFragment extends Fragment {
 
 
         return view;
+    }
+
+    private void popUpTotal(int custItems1) {
+        if(custItems1 != 0){
+            etOther1.setText(String.valueOf(custItems1));
+            etOther1.clearFocus();
+        }else{
+            etOther1.setText(String.valueOf(""));
+            etOther1.clearFocus();
+        }
     }
 
 

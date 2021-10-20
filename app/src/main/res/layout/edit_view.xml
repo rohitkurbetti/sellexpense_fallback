@@ -320,6 +320,7 @@
 
             <EditText
                 android:id="@+id/otheru"
+                android:focusable="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Enter Other rate"
@@ -500,6 +501,7 @@
 
             <EditText
                 android:id="@+id/other1u"
+                android:focusable="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Enter Other1 rate"

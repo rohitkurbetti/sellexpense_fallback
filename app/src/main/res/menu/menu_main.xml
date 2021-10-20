@@ -21,4 +21,8 @@
         android:id="@+id/action_openDoc"
         android:title="Find Document"/>
 
+    <item
+        android:id="@+id/action_viewDoc"
+        android:title="Open Document"/>
+
 </menu>

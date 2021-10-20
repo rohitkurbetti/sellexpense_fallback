@@ -4,6 +4,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -16,6 +18,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorSpace;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
@@ -56,9 +59,21 @@ import android.widget.Toast;
 
 import com.example.mytabs.ui.main.SectionsPagerAdapter;
 import com.ibm.icu.text.RuleBasedNumberFormat;
+import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.BorderRadius;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.VerticalAlignment;
 import com.opencsv.CSVReader;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -80,12 +95,14 @@ import static com.itextpdf.svg.SvgConstants.Tags.PATH;
 public class MainActivity extends AppCompatActivity {
     private static final int TIME_INTERVAL = 2000; // # milliseconds, desired time passed between two back presses.
     private static final int ACTIVITY_CHOOSE_FILE = 123;
+    private static final String CHANNEL_ID = "exampleservicechannel";
+    private int ACTIVITY_CHOOSE_ANYFILE=23;
     private long mBackPressed;
     private String[] storagePermissions;
     private static final int STORAGE_REQUEST_CODE_EXPORT = 1;
     private static final int STORAGE_REQUEST_CODE_IMPORT = 2;
 
-
+    int r=63,g=169,b=219;
     public FirstFragment f1;
     public SecondFragment f2;
     public ThirdFragment f3;
@@ -103,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
     int iceTotal;
     int coldTotal;
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -118,20 +134,24 @@ public class MainActivity extends AppCompatActivity {
         if(id == R.id.action_restore){
             if(checkStoragePermission()){
                 //permission allowed
-                class MyImport extends AsyncTask<String,Void,String>{
-                    @Override
-                    protected String doInBackground(String... strings) {
-                        importCSV();
-                        return null;
-                    }
+//                class MyImport extends AsyncTask<String,Void,String>{
+//                    @Override
+//                    protected String doInBackground(String... strings) {
+//                        importCSV();
+//                        return null;
+//                    }
+//
+//                    @Override
+//                    protected void onPostExecute(String s) {
+//                        super.onPostExecute(s);
+//                        Toast.makeText(context, "Done Importing", Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//                new MyImport().execute();
 
-                    @Override
-                    protected void onPostExecute(String s) {
-                        super.onPostExecute(s);
-                        Toast.makeText(context, "Done Importing", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                new MyImport().execute();
+                Intent serIntent = new Intent(this,ExampleIntentService.class);
+                serIntent.putExtra("inputExtra","import");
+                ContextCompat.startForegroundService(this,serIntent);
 
             }else{
                 requestStoragePermissionImport();
@@ -150,21 +170,25 @@ public class MainActivity extends AppCompatActivity {
         if(id == R.id.action_backup){
             if(checkStoragePermission()){
                 //permission allowed
-                class MyTask extends AsyncTask<String,Void,String>{
+//                class MyTask extends AsyncTask<String,Void,String>{
+//
+//                    @Override
+//                    protected String doInBackground(String... strings) {
+//                        exportCSV();
+//                        return null;
+//                    }
+//
+//                    @Override
+//                    protected void onPostExecute(String s) {
+//                        super.onPostExecute(s);
+//                        Toast.makeText(context, "Done Exporting", Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//                new MyTask().execute();
 
-                    @Override
-                    protected String doInBackground(String... strings) {
-                        exportCSV();
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(String s) {
-                        super.onPostExecute(s);
-                        Toast.makeText(context, "Done Exporting", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                new MyTask().execute();
+                Intent serIntent = new Intent(this,ExampleIntentService.class);
+                serIntent.putExtra("inputExtra","export");
+                ContextCompat.startForegroundService(this,serIntent);
 
             }else{
                 requestStoragePermissionExport();
@@ -199,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if(id == R.id.action_openDoc){
+
             if(checkStoragePermission()){
                 //permission allowed
 //                saveToMail();
@@ -224,6 +249,35 @@ public class MainActivity extends AppCompatActivity {
 //                }
             }
         }
+        if(id == R.id.action_viewDoc){
+
+            if(checkStoragePermission()){
+                //permission allowed
+//                saveToMail();
+                Intent chooseFile;
+                Intent intent;
+                chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+                chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
+                chooseFile.setType("application/*");
+                intent = Intent.createChooser(chooseFile, "Choose a file");
+                startActivityForResult(intent, ACTIVITY_CHOOSE_ANYFILE);
+
+            }else{
+                requestStoragePermissionImport();
+//                int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//
+//                if (permission != PackageManager.PERMISSION_GRANTED) {
+//                    // We don't have permission so prompt the user
+//                    ActivityCompat.requestPermissions(
+//                            this,
+//                            storagePermissions,
+//                            STORAGE_REQUEST_CODE_EXPORT
+//                    );
+//                }
+            }
+        }
+
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -233,6 +287,15 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK) return;
         String path = "";
+        if(requestCode == ACTIVITY_CHOOSE_ANYFILE){
+            Uri uri = data.getData();
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.putExtra(Intent.EXTRA_STREAM, uri);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(uri, getContentResolver().getType(uri));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
         if(requestCode == ACTIVITY_CHOOSE_FILE)
         {
             Uri uri = data.getData();
@@ -391,9 +454,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
-
-
     }
 
     private String getRealPathFromURI(Uri uri) {
@@ -463,7 +523,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void importCSV() {
+    public void importCSV() {
         DbManager db = new DbManager(MainActivity.this);
         String pathAndFileName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/SQLiteBackup/Expense_Backup/" + "SQLite_ExpBackup.csv";
         String pathAndFileName1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/SQLiteBackup/Billing_Backup/" + "SQLite_BillBackup.csv";
@@ -744,6 +804,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        createNotifChannel();
         overridePendingTransition(R.anim.abc_fade_in,R.anim.abc_fade_out);
         setContentView(R.layout.activity_main);
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -915,10 +976,15 @@ public class MainActivity extends AppCompatActivity {
                             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd");
                             String currDate = sdf1.format(now.getTime());
                             //tcf.setText("Orange: "+f1.orangeTotal+"\nKokam: "+f1.kokamTotal+"\nLemon: "+f1.lemonTotal+"\nSarbat: "+f1.sarbatTotal+"\n----------------\nTotal: "+f1.finalTotal+"\nDate & Time: "+dateStr);
-                            String res = db.addRecord(billNo_generated,validCustName, f1.orangeTotal, f1.kokamTotal, f1.lemonTotal, f1.sarbatTotal, f1.pachakTotal, f1.walaTotal, f1.lSodaTotal, f1.ssrbtTotal, f1.lorangeTotal, f1.LlemonTotal,f1.jeeraTotal, f1.sSodaTotal ,f1.waterTotal ,f1.lassiTotal ,f2.vanillaTotal, f2.pistaTotal, f2.sbryTotal, f2.mangoTotal, f2.btrSchTotal,f2.kulfiTotal,f2.cbarTotal,f2.fpackTotal,f1.otherAmt,f2.otherAmt1, masterFinal, dateStr,currDate);
+                            String res = db.addRecord(billNo_generated,validCustName, f1.orangeTotal, f1.kokamTotal, f1.lemonTotal, f1.sarbatTotal, f1.pachakTotal, f1.walaTotal, f1.lSodaTotal, f1.ssrbtTotal, f1.lorangeTotal, f1.LlemonTotal,f1.jeeraTotal, f1.sSodaTotal ,f1.waterTotal ,f1.lassiTotal ,f2.vanillaTotal, f2.pistaTotal, f2.sbryTotal, f2.mangoTotal, f2.btrSchTotal,f2.kulfiTotal,f2.cbarTotal,f2.fpackTotal,f1.otherAmt,f2.otherAmt1, masterFinal, dateStr,currDate,f1.sbTemp!=null?String.valueOf(f1.sbTemp):"",f2.sbTemp1!=null?String.valueOf(f2.sbTemp1):"");
                             if(checkStoragePermission()){
                                 //permission allowed
                                 printInvoice(billNo_generated, map, masterFinal,null,null);
+                                try {
+                                    printInvoice1(billNo_generated, map, masterFinal,null,validCustName);
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
                             }else{
                                 //permission denied
                                 requestStoragePermissionExport();
@@ -937,6 +1003,19 @@ public class MainActivity extends AppCompatActivity {
                             validCustName="";
                             clearAll();
                             map.clear();
+                            if(f1.sbTemp!=null){
+                                f1.sbTemp.delete(0,f1.sbTemp.length());
+                            }
+
+                            if(f2.sbTemp1!=null){
+                                f2.sbTemp1.delete(0,f2.sbTemp1.length());
+                            }
+                            if(f1.itemsBill!=null){
+                                f1.itemsBill.clear();
+                            }
+                            if(f2.itemsBill2!=null){
+                                f2.itemsBill2.clear();
+                            }
                         }
 
                         private void clearAll() {
@@ -992,6 +1071,113 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void createNotifChannel() {
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Example service",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+    }
+    private void printInvoice1(Long billNo_generated, Map<String, Item> map, int masterFinal, Object o, Object o1) throws FileNotFoundException {
+        SharedPreferences prefs;
+        SharedPreferences.Editor editor;
+        prefs = getSharedPreferences("d",MODE_PRIVATE);
+        editor = prefs.edit();
+        boolean isReprint = prefs.getBoolean("isReprint",false);
+        Date date = new Date();
+        String datePattern = "dd/MM/yyyy";
+        String fileSaveDatePattern = "yyMMddhhmmss";
+        SimpleDateFormat datFormatForFileSave = new SimpleDateFormat(fileSaveDatePattern);
+        String fileExt = datFormatForFileSave.format(date.getTime());
+        SimpleDateFormat datePatternFormat = new SimpleDateFormat(datePattern);
+        String timePattern = "hh:mm:ss a";
+        SimpleDateFormat timePatternFormat = new SimpleDateFormat(timePattern);
+
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+        File file = new File(path,"GajananColdrink_"+fileExt+"_"+billNo_generated+".pdf");
+        PdfWriter pdfWriter = new PdfWriter(path+"/GajananColdrink_Bill_"+fileExt+"_"+billNo_generated+".pdf");
+        com.itextpdf.kernel.pdf.PdfDocument pdfDocument = new com.itextpdf.kernel.pdf.PdfDocument(pdfWriter);
+        Document document = new Document(pdfDocument);
+        pdfDocument.setDefaultPageSize(PageSize.A7);
+        document.setMargins(10f,10f,10f,10f);
+        document.setFontSize(9);
+        float col = 100f;
+        float columnWidth[] = {col,col};
+        Table table = new Table(columnWidth);
+        table.setFontSize(6);
+        table.setBackgroundColor(new DeviceRgb(r,g,b));
+        table.addCell(new Cell().add(new Paragraph("Invoice").setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE).setMarginTop(10f).setFontSize(13f).setMarginBottom(10f)).setBorder(Border.NO_BORDER));
+        table.addCell(new Cell().add(new Paragraph("Gajanan Coldrink House\nOpp. Nagar Palika,Main Road,Gadhinglaj")
+                .setTextAlignment(TextAlignment.RIGHT)
+                .setMarginTop(10f)
+                .setMarginBottom(10f)
+                .setMarginRight(10f)
+        ).setBorder(Border.NO_BORDER));
+
+        float colWidth[] = {40,80,70,80};
+
+        Table custInfoTable = new Table(colWidth).setBorder(Border.NO_BORDER);
+        custInfoTable.setFontSize(6);
+        custInfoTable.addCell(new Cell(0,4).add(new Paragraph("Customer Information").setBold()).setBorder(Border.NO_BORDER));
+
+        custInfoTable.addCell(new Cell().add(new Paragraph("Name")).setVerticalAlignment(VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+        custInfoTable.addCell(new Cell().add(new Paragraph(String.valueOf(o1.toString()))).setVerticalAlignment(VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+        custInfoTable.addCell(new Cell().add(new Paragraph("Invoice No")).setVerticalAlignment(VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+        custInfoTable.addCell(new Cell().add(new Paragraph(String.valueOf(billNo_generated))).setVerticalAlignment(VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+        custInfoTable.addCell(new Cell().add(new Paragraph("Date")).setVerticalAlignment(VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+        custInfoTable.addCell(new Cell().add(new Paragraph(String.valueOf(datePatternFormat.format(date.getTime())))).setVerticalAlignment(VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+        custInfoTable.addCell(new Cell().add(new Paragraph("Time")).setVerticalAlignment(VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+        custInfoTable.addCell(new Cell().add(new Paragraph(String.valueOf(timePatternFormat.format(date.getTime())))).setVerticalAlignment(VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+
+
+        float colWidth1[] = {100,50,50,80};
+
+        Table itemInfoTable = new Table(colWidth1).setBorder(Border.NO_BORDER);
+        itemInfoTable.setFontSize(6);
+        itemInfoTable.addCell(new Cell().add(new Paragraph("Item")).setTextAlignment(TextAlignment.LEFT).setBackgroundColor(new DeviceRgb(r,g,b)).setBorder(Border.NO_BORDER));
+        itemInfoTable.addCell(new Cell().add(new Paragraph("Qty")).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(new DeviceRgb(r,g,b)).setBorder(Border.NO_BORDER));
+        itemInfoTable.addCell(new Cell().add(new Paragraph("Rate(Rs.)")).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(new DeviceRgb(r,g,b)).setBorder(Border.NO_BORDER));
+        itemInfoTable.addCell(new Cell().add(new Paragraph("Amount")).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(new DeviceRgb(r,g,b)).setBorder(Border.NO_BORDER));
+
+//        itemInfoTable.addCell(new Cell().add(new Paragraph("App Creation")).setTextAlignment(TextAlignment.LEFT));
+//        itemInfoTable.addCell(new Cell().add(new Paragraph("20")).setTextAlignment(TextAlignment.CENTER));
+//        itemInfoTable.addCell(new Cell().add(new Paragraph("200")).setTextAlignment(TextAlignment.CENTER));
+//        itemInfoTable.addCell(new Cell().add(new Paragraph("4000")).setTextAlignment(TextAlignment.CENTER));
+//
+//        itemInfoTable.addCell(new Cell().add(new Paragraph("WebApp Creation")).setTextAlignment(TextAlignment.LEFT));
+//        itemInfoTable.addCell(new Cell().add(new Paragraph("15")).setTextAlignment(TextAlignment.CENTER));
+//        itemInfoTable.addCell(new Cell().add(new Paragraph("150")).setTextAlignment(TextAlignment.CENTER));
+//        itemInfoTable.addCell(new Cell().add(new Paragraph("3000")).setTextAlignment(TextAlignment.CENTER));
+//
+//        itemInfoTable.addCell(new Cell().add(new Paragraph("")).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(new DeviceRgb(r,g,b)).setBorder(Border.NO_BORDER));
+//        itemInfoTable.addCell(new Cell().add(new Paragraph("")).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(new DeviceRgb(r,g,b)).setBorder(Border.NO_BORDER));
+//        itemInfoTable.addCell(new Cell().add(new Paragraph("Total")).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(new DeviceRgb(r,g,b)).setBorder(Border.NO_BORDER));
+//        itemInfoTable.addCell(new Cell().add(new Paragraph("4500")).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(new DeviceRgb(r,g,b)).setBorder(Border.NO_BORDER));
+
+        for(Map.Entry<String,Item> itr : map.entrySet()){
+            itemInfoTable.addCell(new Cell().add(new Paragraph(itr.getKey())).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
+            itemInfoTable.addCell(new Cell().add(new Paragraph(String.valueOf(itr.getValue().getQty()))).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+            itemInfoTable.addCell(new Cell().add(new Paragraph(String.valueOf(itr.getValue().getRate()))).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+            itemInfoTable.addCell(new Cell().add(new Paragraph(String.valueOf(itr.getValue().getTotal()))).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+        }
+
+        itemInfoTable.addCell(new Cell().add(new Paragraph("Total Items:")).setTextAlignment(TextAlignment.LEFT).setBackgroundColor(new DeviceRgb(r,g,b)).setBorder(Border.NO_BORDER));
+        itemInfoTable.addCell(new Cell().add(new Paragraph(String.valueOf(map.size()))).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(new DeviceRgb(r,g,b)).setBorder(Border.NO_BORDER));
+        itemInfoTable.addCell(new Cell().add(new Paragraph("Total(Rs.)")).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(new DeviceRgb(r,g,b)).setBorder(Border.NO_BORDER));
+        itemInfoTable.addCell(new Cell().add(new Paragraph(String.valueOf(masterFinal))).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(new DeviceRgb(r,g,b)).setBorder(Border.NO_BORDER));
+
+        document.add(table);
+        document.add(custInfoTable);
+        document.add(itemInfoTable);
+
+        document.close();
+
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void printInvoice(Long billNo, Map<String, Item> map, Integer finalTotal,String dateandtime,String cname) {
         SharedPreferences prefs;
@@ -1011,6 +1197,7 @@ public class MainActivity extends AppCompatActivity {
         SimpleDateFormat timePatternFormat = new SimpleDateFormat(timePattern);
         PdfDocument.PageInfo myPageInfo = new PdfDocument.PageInfo.Builder(1000, 1400, 1).create();
         PdfDocument.Page myPage = mypdfDocument.startPage(myPageInfo);
+        System.out.println("Height:"+myPageInfo.getPageHeight());
         Canvas canvas = myPage.getCanvas();
 
         myPaint.setTextSize(50);
@@ -1126,8 +1313,6 @@ public class MainActivity extends AppCompatActivity {
         height = height + 45;
         myPaint.setColor(Color.BLACK);
         canvas.drawText("SubTotal", 550, height, myPaint);
-        height = height + 40;
-        canvas.drawText("Tax 0%", 550, height, myPaint);
 
         myPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         height = height + 40;
@@ -1135,13 +1320,13 @@ public class MainActivity extends AppCompatActivity {
         myPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
         height = height - 80;
         myPaint.setTextAlign(Paint.Align.RIGHT);
-        canvas.drawText(String.valueOf(finalTotal), 970, height, myPaint);
         height = height + 40;
-        canvas.drawText(String.valueOf((finalTotal * 0) / 100), 970, height, myPaint);
+        canvas.drawText(String.valueOf(finalTotal), 960, height, myPaint);
+//        canvas.drawText(String.valueOf((finalTotal * 0) / 100), 970, height, myPaint);
 
         myPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         height = height + 40;
-        canvas.drawText(String.valueOf("₹ " + ((finalTotal) + (finalTotal * 0) / 100)), 970, height, myPaint);
+        canvas.drawText(String.valueOf("₹ " + ((finalTotal) + (finalTotal * 0) / 100)), 960, height, myPaint);
 
         height = height + 80;
         myPaint.setTextAlign(Paint.Align.RIGHT);
@@ -1160,8 +1345,6 @@ public class MainActivity extends AppCompatActivity {
         myPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
         height = height + 40;
         canvas.drawText("Thank You Visit Again...", 30, height, myPaint);
-
-
         mypdfDocument.finishPage(myPage);
         File file;
         File folder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/GajananColdrinks");
