@@ -218,7 +218,9 @@ public class ExampleIntentService extends IntentService {
                         int total = Integer.parseInt(nexLine1[26]);
                         String addedDateTime = String.valueOf(nexLine1[27]);
                         String date = String.valueOf(nexLine1[28]);
-                        db.addFromCSV1(billNo,custName,orange,kokam,lemon,sarbat,pachak,wala,lsoda,ssrbt,lorange,llemon,jsoda,sSoda,water,lassi,vanilla,pista,stwbry,mango,btrsch,kulfi,cbar,fpack,other,other1,total,addedDateTime,date);
+                        String otherItems = String.valueOf(nexLine1[29]);
+                        String otherItems1 = String.valueOf(nexLine1[30]);
+                        db.addFromCSV1(billNo,custName,orange,kokam,lemon,sarbat,pachak,wala,lsoda,ssrbt,lorange,llemon,jsoda,sSoda,water,lassi,vanilla,pista,stwbry,mango,btrsch,kulfi,cbar,fpack,other,other1,total,addedDateTime,date,otherItems,otherItems1);
 //                    db.updateExpOne(id,selling,expense,profit,date,expenses);
                     }
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -353,6 +355,10 @@ public class ExampleIntentService extends IntentService {
                     fw1.append(String.valueOf(res1.getString(28)));
                     fw1.append(",");
                     fw1.append(String.valueOf(res1.getString(29)));
+                    fw1.append(",");
+                    fw1.append(String.valueOf(res1.getString(30)));
+                    fw1.append(",");
+                    fw1.append(String.valueOf(res1.getString(31)));
                     fw1.append("\n");
                 }
                 fw1.flush();
@@ -675,11 +681,11 @@ public class ExampleIntentService extends IntentService {
 
     @Override
     public void onDestroy() {
-        System.gc();
         stopForeground(true);
         super.onDestroy();
         Log.d(TAG,"onDestroy");
         wakeLock.release();
+        System.gc();
         Log.d(TAG,"wakelock released");
     }
 }

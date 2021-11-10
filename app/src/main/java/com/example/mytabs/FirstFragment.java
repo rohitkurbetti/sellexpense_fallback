@@ -809,7 +809,7 @@ public class FirstFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tv27.setText(String.valueOf(seekBar.getProgress()));
-                water = prefs.getInt("water",15);
+                water = prefs.getInt("water",10);
                 waterTotal = Integer.parseInt(tv27.getText().toString()) * water;
                 refreshTotal();
             }

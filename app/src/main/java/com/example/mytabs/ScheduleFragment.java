@@ -2,6 +2,7 @@ package com.example.mytabs;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -31,10 +32,15 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Text;
@@ -51,6 +57,8 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class ScheduleFragment extends Fragment {
     SharedPreferences prefs;
+    FirebaseFirestore db;
+    ProgressDialog pd;
     SharedPreferences.Editor editor;
     int expense = 0;
     int todayTotal = 0;
@@ -100,6 +108,7 @@ public class ScheduleFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_schedule, container, false);
         prefs = getActivity().getSharedPreferences("bill", MODE_PRIVATE);
         editor = prefs.edit();
+        pd = new ProgressDialog(v.getContext());
         tt = v.findViewById(R.id.tt);
         btnEdit = v.findViewById(R.id.button4);
         btnDelete = v.findViewById(R.id.button6);
@@ -712,14 +721,23 @@ public class ScheduleFragment extends Fragment {
                         }else{
                             sb1.append("");
                         }
-
                         db.updateExpOne(id, todayTotal, expense, profitToday, ss,String.valueOf(sb1));
+                        try {
+                            savetoFireStore(todayTotal, expense, profitToday, ss,String.valueOf(sb1));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                         Toast.makeText(getContext(), "Expense updated successfully: "+id, Toast.LENGTH_SHORT).show();
                     } else {
                         StringBuilder sb = new StringBuilder();
                         sb.append(items.entrySet());
                         System.out.println(sb);
                         int res = db.saveOne(todayTotal, expense, profitToday, ss,String.valueOf(sb));
+                        try {
+                            savetoFireStore(todayTotal, expense, profitToday, ss,String.valueOf(sb));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                         if(res==1){
                             Toast.makeText(getContext(), "Expense saved successfully", Toast.LENGTH_SHORT).show();
                         }else{
@@ -766,6 +784,37 @@ public class ScheduleFragment extends Fragment {
             }
         });
         return v;
+    }
+
+
+    private void savetoFireStore(int todayTotal, int expense, int profitToday, String ss, String s) throws ParseException {
+        db = FirebaseFirestore.getInstance();
+        pd.setMessage("Uploading data to FireStore");
+        pd.show();
+        Map<String,Object> m = new HashMap<>();
+        m.put("selling",todayTotal);
+        m.put("expense",expense);
+        m.put("profit",profitToday);
+        m.put("date",ss);
+        m.put("expenses",String.valueOf(s));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        Date d = sdf.parse(ss);
+        SimpleDateFormat sdff = new SimpleDateFormat("yyyy-MM-dd");
+        db.collection("Expenses_temp").document(String.valueOf(sdff.format(d.getTime()))).set(m)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        pd.dismiss();
+                        Toast.makeText(getContext(), "Expense Uploaded", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        pd.dismiss();
+                        Toast.makeText(getContext(), "Expense Failed to upload", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void popUpTotalForEditExp(int custItems) {

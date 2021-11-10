@@ -25,4 +25,8 @@
         android:id="@+id/action_viewDoc"
         android:title="Open Document"/>
 
+    <item
+        android:id="@+id/action_getDocFireStore"
+        android:title="Get From Cloud"/>
+
 </menu>

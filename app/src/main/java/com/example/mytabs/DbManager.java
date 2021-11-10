@@ -243,7 +243,7 @@ public class DbManager extends SQLiteOpenHelper {
         db.insert("t_expense",null,cv);
     }
 
-    public void addFromCSV1(int billNo, String custName, int orange, int kokam, int lemon, int sarbat, int pachak, int wala, int lsoda, int ssrbt, int lorange, int llemon, int jsoda, int sSoda, int water, int lassi, int vanilla, int pista, int stwbry, int mango, int btrsch, int kulfi, int cbar, int fpack, int other, int other1, int total, String addedDateTime, String date) {
+    public void addFromCSV1(int billNo, String custName, int orange, int kokam, int lemon, int sarbat, int pachak, int wala, int lsoda, int ssrbt, int lorange, int llemon, int jsoda, int sSoda, int water, int lassi, int vanilla, int pista, int stwbry, int mango, int btrsch, int kulfi, int cbar, int fpack, int other, int other1, int total, String addedDateTime, String date,String otherItems,String otherItems1) {
         SQLiteDatabase db = this.getWritableDatabase();
 //        db.execSQL("delete from t_bill");
         ContentValues cv = new ContentValues();
@@ -276,6 +276,8 @@ public class DbManager extends SQLiteOpenHelper {
         cv.put("total",total);
         cv.put("addedondatetime", String.valueOf(addedDateTime));
         cv.put("date", String.valueOf(date));
+        cv.put("otherItems", String.valueOf(otherItems));
+        cv.put("otherItems1", String.valueOf(otherItems1));
         System.out.println(cv);
         db.insert("t_bill",null,cv);
     }
