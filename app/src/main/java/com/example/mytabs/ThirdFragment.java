@@ -130,6 +130,8 @@ public class ThirdFragment extends Fragment {
     EditText kulfiu;
     EditText cbaru;
     EditText fpacku;
+    EditText conesu;
+    EditText conebu;
     EditText other1u;
     EditText editBillNo;
     EditText btnCommit;
@@ -142,7 +144,7 @@ public class ThirdFragment extends Fragment {
     String customerName;
     Spinner spinner;
     TextView currDate1, tvTotal, srno1;
-    int vanillau1, pistau1, stwbryu1, btrschu1, kulfiu1, cbaru1, fpacku1, otheru1, other1u1, mangou1, orangeu1, kokamu1, sarbatu1, lemonu1, lsodau1, ssrbtu1, walau1, wateru1, lassiu1, pachaku1, lorangeu1, llemonu1, jsodau1, ssodau1;
+    int vanillau1, pistau1, stwbryu1, btrschu1, kulfiu1, cbaru1, fpacku1, otheru1, other1u1, mangou1, orangeu1, kokamu1, sarbatu1, lemonu1, lsodau1, ssrbtu1, walau1, wateru1, lassiu1, pachaku1, lorangeu1, llemonu1, jsodau1, ssodau1,conesu1,conebu1;
     private DbManager db;
     View progressDialog;
     AlertDialog dialog1;
@@ -290,6 +292,8 @@ public class ThirdFragment extends Fragment {
                         kulfiu = custEditView.findViewById(R.id.kulfiu);
                         cbaru = custEditView.findViewById(R.id.cbaru);
                         fpacku = custEditView.findViewById(R.id.fpacku);
+                        conesu = custEditView.findViewById(R.id.conesu);
+                        conebu = custEditView.findViewById(R.id.conebu);
                         other1u = custEditView.findViewById(R.id.other1u);
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -587,8 +591,10 @@ public class ThirdFragment extends Fragment {
                             kulfiu1 = res.getInt(22);
                             cbaru1 = res.getInt(23);
                             fpacku1 = res.getInt(24);
-                            otheru1 = res.getInt(25);
-                            other1u1 = res.getInt(26);
+                            conesu1 = res.getInt(25);
+                            conebu1 = res.getInt(26);
+                            otheru1 = res.getInt(27);
+                            other1u1 = res.getInt(28);
 
                         }
                         etcName.setText(String.valueOf(customerName));
@@ -616,6 +622,8 @@ public class ThirdFragment extends Fragment {
                         kulfiu.setText(String.valueOf(kulfiu1));
                         cbaru.setText(String.valueOf(cbaru1));
                         fpacku.setText(String.valueOf(fpacku1));
+                        conesu.setText(String.valueOf(conesu1));
+                        conebu.setText(String.valueOf(conebu1));
                         other1u.setText(String.valueOf(other1u1));
 
 
@@ -703,6 +711,14 @@ public class ThirdFragment extends Fragment {
                                     fpacku.setText(String.valueOf("0"));
                                 }
 
+                                if (conesu.getText().toString().equals("")) {
+                                    conesu.setText(String.valueOf("0"));
+                                }
+
+                                if (conebu.getText().toString().equals("")) {
+                                    conebu.setText(String.valueOf("0"));
+                                }
+
                                 if (other1u.getText().toString().equals("")) {
                                     other1u.setText(String.valueOf("0"));
                                 }
@@ -733,6 +749,8 @@ public class ThirdFragment extends Fragment {
                                 grandTotal = grandTotal + Integer.parseInt(kulfiu.getText().toString());
                                 grandTotal = grandTotal + Integer.parseInt(cbaru.getText().toString());
                                 grandTotal = grandTotal + Integer.parseInt(fpacku.getText().toString());
+                                grandTotal = grandTotal + Integer.parseInt(conesu.getText().toString());
+                                grandTotal = grandTotal + Integer.parseInt(conebu.getText().toString());
                                 grandTotal = grandTotal + Integer.parseInt(other1u.getText().toString());
 
 
@@ -766,6 +784,8 @@ public class ThirdFragment extends Fragment {
                                         Integer.parseInt(kulfiu.getText().toString()),
                                         Integer.parseInt(cbaru.getText().toString()),
                                         Integer.parseInt(fpacku.getText().toString()),
+                                        Integer.parseInt(conesu.getText().toString()),
+                                        Integer.parseInt(conebu.getText().toString()),
                                         Integer.parseInt(otheru.getText().toString()),
                                         Integer.parseInt(other1u.getText().toString()),
                                         grandTotal,
@@ -830,6 +850,8 @@ public class ThirdFragment extends Fragment {
                 TextView tbKulfi = customView.findViewById(R.id.kulfi);
                 TextView tbCbar = customView.findViewById(R.id.cbar);
                 TextView tbFpack = customView.findViewById(R.id.fpack);
+                TextView tbCones = customView.findViewById(R.id.cones);
+                TextView tbConeb = customView.findViewById(R.id.coneb);
                 TextView tbOther = customView.findViewById(R.id.other);
                 TextView tbOther1 = customView.findViewById(R.id.other1);
                 TextView tb16 = customView.findViewById(R.id.total);
@@ -844,7 +866,7 @@ public class ThirdFragment extends Fragment {
                         int total = 0;
                         while (res.moveToNext()) {
 //                    sb.append(res.getInt(1)+"  "+res.getInt(18)+"  "+res.getString(19)+"\n");
-                            total += res.getInt(27);
+                            total += res.getInt(29);
                             TableRow tableRow = new TableRow(customView.getContext());
                             tableRow.setPadding(10, 10, 10, 10);
                             TextView tv1 = new TextView(customView.getContext());
@@ -943,26 +965,34 @@ public class ThirdFragment extends Fragment {
                             tvFpack.setText(String.valueOf(res.getInt(24)));
                             tvFpack.setGravity(Gravity.CENTER_HORIZONTAL);
 
+                            TextView tvCones = new TextView(customView.getContext());
+                            tvCones.setText(String.valueOf(res.getInt(25)));
+                            tvCones.setGravity(Gravity.CENTER_HORIZONTAL);
+
+                            TextView tvConeb = new TextView(customView.getContext());
+                            tvConeb.setText(String.valueOf(res.getInt(26)));
+                            tvConeb.setGravity(Gravity.CENTER_HORIZONTAL);
+
                             TextView tvOther = new TextView(customView.getContext());
-                            tvOther.setText(String.valueOf(res.getInt(25)));
+                            tvOther.setText(String.valueOf(res.getInt(27)));
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                tvOther.setTooltipText(String.valueOf(res.getString(30)));
+                                tvOther.setTooltipText(String.valueOf(res.getString(32)));
                             }
                             tvOther.setGravity(Gravity.CENTER_HORIZONTAL);
 
                             TextView tvOther1 = new TextView(customView.getContext());
-                            tvOther1.setText(String.valueOf(res.getInt(26)));
+                            tvOther1.setText(String.valueOf(res.getInt(28)));
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                tvOther1.setTooltipText(String.valueOf(res.getString(31)));
+                                tvOther1.setTooltipText(String.valueOf(res.getString(33)));
                             }
                             tvOther1.setGravity(Gravity.CENTER_HORIZONTAL);
 
                             TextView tv17 = new TextView(customView.getContext());
-                            tv17.setText(String.valueOf(res.getInt(27)));
+                            tv17.setText(String.valueOf(res.getInt(29)));
                             tv17.setGravity(Gravity.CENTER_HORIZONTAL);
 
                             TextView tv18 = new TextView(customView.getContext());
-                            tv18.setText(String.valueOf(res.getString(28)));
+                            tv18.setText(String.valueOf(res.getString(30)));
                             tv18.setGravity(Gravity.CENTER_HORIZONTAL);
 
 
@@ -991,6 +1021,8 @@ public class ThirdFragment extends Fragment {
                                 tbKulfi.setTextColor(Color.WHITE);
                                 tbCbar.setTextColor(Color.WHITE);
                                 tbFpack.setTextColor(Color.WHITE);
+                                tbCones.setTextColor(Color.WHITE);
+                                tbConeb.setTextColor(Color.WHITE);
                                 tbWater.setTextColor(Color.WHITE);
                                 tbLassi.setTextColor(Color.WHITE);
                                 tbOther.setTextColor(Color.WHITE);
@@ -1020,6 +1052,8 @@ public class ThirdFragment extends Fragment {
                                 tbKulfi.setTextColor(Color.BLACK);
                                 tbCbar.setTextColor(Color.BLACK);
                                 tbFpack.setTextColor(Color.BLACK);
+                                tbCones.setTextColor(Color.BLACK);
+                                tbConeb.setTextColor(Color.BLACK);
                                 tbWater.setTextColor(Color.BLACK);
                                 tbLassi.setTextColor(Color.BLACK);
                                 tbOther.setTextColor(Color.BLACK);
@@ -1049,6 +1083,8 @@ public class ThirdFragment extends Fragment {
                             tableRow.addView(tvKulfi);
                             tableRow.addView(tvCbar);
                             tableRow.addView(tvFpack);
+                            tableRow.addView(tvCones);
+                            tableRow.addView(tvConeb);
                             tableRow.addView(tvOther);
                             tableRow.addView(tvOther1);
                             tableRow.addView(tv17);
@@ -1121,7 +1157,7 @@ public class ThirdFragment extends Fragment {
                             });
                             while (res.moveToNext()) {
 //                                sb.append(res.getInt(1)+"  "+res.getInt(18)+"  "+res.getString(19)+"\n");
-                                sb.append("Total: " + res.getInt(27));
+                                sb.append("Total: " + res.getInt(29));
                                 TableRow tableRow = new TableRow(customView.getContext());
                                 tableRow.setPadding(10, 10, 10, 10);
                                 TextView tv1 = new TextView(customView.getContext());
@@ -1220,22 +1256,30 @@ public class ThirdFragment extends Fragment {
                                 tvFpack.setText(String.valueOf(res.getInt(24)));
                                 tvFpack.setGravity(Gravity.CENTER_HORIZONTAL);
 
+                                TextView tvCones = new TextView(customView.getContext());
+                                tvCones.setText(String.valueOf(res.getInt(25)));
+                                tvCones.setGravity(Gravity.CENTER_HORIZONTAL);
+
+                                TextView tvConeb = new TextView(customView.getContext());
+                                tvConeb.setText(String.valueOf(res.getInt(26)));
+                                tvConeb.setGravity(Gravity.CENTER_HORIZONTAL);
+
                                 TextView tvOther = new TextView(customView.getContext());
-                                tvOther.setText(String.valueOf(res.getInt(25)));
-                                tvOther.setTooltipText(String.valueOf(res.getString(30)));
+                                tvOther.setText(String.valueOf(res.getInt(27)));
+                                tvOther.setTooltipText(String.valueOf(res.getString(32)));
                                 tvOther.setGravity(Gravity.CENTER_HORIZONTAL);
 
                                 TextView tvOther1 = new TextView(customView.getContext());
-                                tvOther1.setText(String.valueOf(res.getInt(26)));
-                                tvOther1.setTooltipText(String.valueOf(res.getString(31)));
+                                tvOther1.setText(String.valueOf(res.getInt(28)));
+                                tvOther1.setTooltipText(String.valueOf(res.getString(33)));
                                 tvOther1.setGravity(Gravity.CENTER_HORIZONTAL);
 
                                 TextView tv17 = new TextView(customView.getContext());
-                                tv17.setText(String.valueOf(res.getInt(27)));
+                                tv17.setText(String.valueOf(res.getInt(29)));
                                 tv17.setGravity(Gravity.CENTER_HORIZONTAL);
 
                                 TextView tv18 = new TextView(customView.getContext());
-                                tv18.setText(String.valueOf(res.getString(28)));
+                                tv18.setText(String.valueOf(res.getString(30)));
                                 tv18.setGravity(Gravity.CENTER_HORIZONTAL);
 
                                 if (isDarkThemeOn) {
@@ -1263,6 +1307,8 @@ public class ThirdFragment extends Fragment {
                                     tbKulfi.setTextColor(Color.WHITE);
                                     tbCbar.setTextColor(Color.WHITE);
                                     tbFpack.setTextColor(Color.WHITE);
+                                    tbCones.setTextColor(Color.WHITE);
+                                    tbConeb.setTextColor(Color.WHITE);
                                     tbWater.setTextColor(Color.WHITE);
                                     tbLassi.setTextColor(Color.WHITE);
                                     tbOther.setTextColor(Color.WHITE);
@@ -1321,6 +1367,8 @@ public class ThirdFragment extends Fragment {
                                 tableRow.addView(tvKulfi);
                                 tableRow.addView(tvCbar);
                                 tableRow.addView(tvFpack);
+                                tableRow.addView(tvCones);
+                                tableRow.addView(tvConeb);
                                 tableRow.addView(tvOther);
                                 tableRow.addView(tvOther1);
                                 tableRow.addView(tv17);
@@ -1363,7 +1411,7 @@ public class ThirdFragment extends Fragment {
                             });
                             while (res.moveToNext()) {
 //                                sb.append(res.getInt(1)+"  "+res.getInt(18)+"  "+res.getString(19)+"\n");
-                                fTotal += res.getInt(27);
+                                fTotal += res.getInt(29);
                                 TableRow tableRow = new TableRow(customView.getContext());
                                 tableRow.setPadding(10, 0, 10, 0);
                                 TextView tv1 = new TextView(customView.getContext());
@@ -1462,22 +1510,30 @@ public class ThirdFragment extends Fragment {
                                 tvFpack.setText(String.valueOf(res.getInt(24)));
                                 tvFpack.setGravity(Gravity.CENTER_HORIZONTAL);
 
+                                TextView tvCones = new TextView(customView.getContext());
+                                tvCones.setText(String.valueOf(res.getInt(25)));
+                                tvCones.setGravity(Gravity.CENTER_HORIZONTAL);
+
+                                TextView tvConeb = new TextView(customView.getContext());
+                                tvConeb.setText(String.valueOf(res.getInt(26)));
+                                tvConeb.setGravity(Gravity.CENTER_HORIZONTAL);
+
                                 TextView tvOther = new TextView(customView.getContext());
-                                tvOther.setText(String.valueOf(res.getInt(25)));
-                                tvOther.setTooltipText(String.valueOf(res.getString(30)));
+                                tvOther.setText(String.valueOf(res.getInt(27)));
+                                tvOther.setTooltipText(String.valueOf(res.getString(32)));
                                 tvOther.setGravity(Gravity.CENTER_HORIZONTAL);
 
                                 TextView tvOther1 = new TextView(customView.getContext());
-                                tvOther1.setText(String.valueOf(res.getInt(26)));
-                                tvOther1.setTooltipText(String.valueOf(res.getString(31)));
+                                tvOther1.setText(String.valueOf(res.getInt(28)));
+                                tvOther1.setTooltipText(String.valueOf(res.getString(33)));
                                 tvOther1.setGravity(Gravity.CENTER_HORIZONTAL);
 
                                 TextView tv17 = new TextView(customView.getContext());
-                                tv17.setText(String.valueOf(res.getInt(27)));
+                                tv17.setText(String.valueOf(res.getInt(29)));
                                 tv17.setGravity(Gravity.CENTER_HORIZONTAL);
 
                                 TextView tv18 = new TextView(customView.getContext());
-                                tv18.setText(String.valueOf(res.getString(28)));
+                                tv18.setText(String.valueOf(res.getString(30)));
                                 tv18.setGravity(Gravity.CENTER_HORIZONTAL);
 
                                 Button btnPrint = new Button(customView.getContext());
@@ -1513,6 +1569,8 @@ public class ThirdFragment extends Fragment {
                                         int kulfi = prefs.getInt("kulfi", 10);
                                         int pista = prefs.getInt("pista", 15);
                                         int fpack = prefs.getInt("fpack", 100);
+                                        int cones = prefs.getInt("cones", 15);
+                                        int coneb = prefs.getInt("coneb", 25);
 //                                        if(!tv1.getText().equals("0")){
 //                                            map.put(finalRes1.getColumnName(1),cname1.getText());
 //                                        }else{
@@ -1704,16 +1762,34 @@ public class ThirdFragment extends Fragment {
                                             map.remove(finalRes1.getColumnName(24));
                                         }
 
-                                        if (!tvOther.getText().equals("0")) {
-                                            map.put(finalRes1.getColumnName(25), new Item(0, 0, Integer.parseInt(String.valueOf(tvOther.getText()))));
+                                        if (!tvCones.getText().equals("0")) {
+                                            int conesTotal = Integer.parseInt(String.valueOf(tvCones.getText()));
+                                            Item conesObj = new Item(cones, conesTotal / cones, conesTotal);
+                                            map.put(finalRes1.getColumnName(25), conesObj);
                                         } else {
                                             map.remove(finalRes1.getColumnName(25));
                                         }
 
-                                        if (!tvOther1.getText().equals("0")) {
-                                            map.put(finalRes1.getColumnName(26), new Item(0, 0, Integer.parseInt(String.valueOf(tvOther1.getText()))));
+                                        if (!tvConeb.getText().equals("0")) {
+                                            int conebTotal = Integer.parseInt(String.valueOf(tvConeb.getText()));
+                                            Item conebObj = new Item(coneb, conebTotal / coneb, conebTotal);
+                                            map.put(finalRes1.getColumnName(26), conebObj);
                                         } else {
                                             map.remove(finalRes1.getColumnName(26));
+                                        }
+
+
+
+                                        if (!tvOther.getText().equals("0")) {
+                                            map.put(finalRes1.getColumnName(27), new Item(0, 0, Integer.parseInt(String.valueOf(tvOther.getText()))));
+                                        } else {
+                                            map.remove(finalRes1.getColumnName(27));
+                                        }
+
+                                        if (!tvOther1.getText().equals("0")) {
+                                            map.put(finalRes1.getColumnName(28), new Item(0, 0, Integer.parseInt(String.valueOf(tvOther1.getText()))));
+                                        } else {
+                                            map.remove(finalRes1.getColumnName(28));
                                         }
 
 //                                        if(!tv17.getText().equals("0")){
@@ -1764,6 +1840,8 @@ public class ThirdFragment extends Fragment {
                                     tbKulfi.setTextColor(Color.WHITE);
                                     tbCbar.setTextColor(Color.WHITE);
                                     tbFpack.setTextColor(Color.WHITE);
+                                    tbCones.setTextColor(Color.WHITE);
+                                    tbConeb.setTextColor(Color.WHITE);
                                     tbWater.setTextColor(Color.WHITE);
                                     tbLassi.setTextColor(Color.WHITE);
                                     tbOther.setTextColor(Color.WHITE);
@@ -1794,6 +1872,8 @@ public class ThirdFragment extends Fragment {
                                     tbKulfi.setTextColor(Color.BLACK);
                                     tbCbar.setTextColor(Color.BLACK);
                                     tbFpack.setTextColor(Color.BLACK);
+                                    tbCones.setTextColor(Color.BLACK);
+                                    tbConeb.setTextColor(Color.BLACK);
                                     tbWater.setTextColor(Color.BLACK);
                                     tbLassi.setTextColor(Color.BLACK);
                                     tbOther.setTextColor(Color.BLACK);
@@ -1824,6 +1904,8 @@ public class ThirdFragment extends Fragment {
                                 tableRow.addView(tvKulfi);
                                 tableRow.addView(tvCbar);
                                 tableRow.addView(tvFpack);
+                                tableRow.addView(tvCones);
+                                tableRow.addView(tvConeb);
                                 tableRow.addView(tvOther);
                                 tableRow.addView(tvOther1);
                                 tableRow.addView(tv17);
@@ -2148,9 +2230,9 @@ public class ThirdFragment extends Fragment {
             while (res.moveToNext()) {
                 TableRow row = new TableRow(getContext());
                 row.setPadding(50, 10, 25, 10);
-                todayTotal = res.getInt(27);
                 srno = res.getInt(1);
-                currDate = res.getString(28);
+                todayTotal = res.getInt(29);
+                currDate = res.getString(30);
 
                 srno1 = new TextView(getContext());
                 srno1.setText(String.valueOf(srno));
@@ -2227,10 +2309,16 @@ public class ThirdFragment extends Fragment {
                     b.putInt("fpack", Integer.parseInt(String.valueOf(res.getInt(24))));
                 }
                 if (!String.valueOf(res.getInt(25)).equals("0")) {
-                    b.putInt("other", Integer.parseInt(String.valueOf(res.getInt(25))));
+                    b.putInt("cones", Integer.parseInt(String.valueOf(res.getInt(25))));
                 }
                 if (!String.valueOf(res.getInt(26)).equals("0")) {
-                    b.putInt("other1", Integer.parseInt(String.valueOf(res.getInt(26))));
+                    b.putInt("coneb", Integer.parseInt(String.valueOf(res.getInt(26))));
+                }
+                if (!String.valueOf(res.getInt(27)).equals("0")) {
+                    b.putInt("other", Integer.parseInt(String.valueOf(res.getInt(27))));
+                }
+                if (!String.valueOf(res.getInt(28)).equals("0")) {
+                    b.putInt("other1", Integer.parseInt(String.valueOf(res.getInt(28))));
                 }
 //                if(!String.valueOf(res.getInt(28)).equals("0")) {
 //                    b.putString("datetime", (String.valueOf(res.getString(28))));
@@ -2306,6 +2394,12 @@ public class ThirdFragment extends Fragment {
                     if (bundle.getInt("fpack") != 0) {
                         str.append(" fpack:" + bundle.getInt("fpack"));
                     }
+                    if (bundle.getInt("cones") != 0) {
+                        str.append(" cones:" + bundle.getInt("cones"));
+                    }
+                    if (bundle.getInt("coneb") != 0) {
+                        str.append(" coneb:" + bundle.getInt("coneb"));
+                    }
                     if (bundle.getInt("other") != 0) {
                         str.append(" other:" + bundle.getInt("other"));
                     }
@@ -2323,7 +2417,7 @@ public class ThirdFragment extends Fragment {
                 currDate1 = new TextView(getContext());
                 currDate1.setText(String.valueOf(currDate));
                 currDate1.setPadding(60, 0, 25, 0);
-                totalAll += Integer.parseInt(String.valueOf(res.getInt(27)));
+                totalAll += Integer.parseInt(String.valueOf(res.getInt(29)));
                 row.addView(srno1);
                 row.addView(tvTotal);
                 row.addView(currDate1);
@@ -2416,10 +2510,10 @@ public class ThirdFragment extends Fragment {
 
                     Paragraph p2 = new Paragraph("Reports\nBillno:" + billName.getText().toString() + " Details").setBold().setFontSize(15).setTextAlignment(TextAlignment.CENTER);
 
-                    float[] columnWidth = {15f, 65f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 20f, 40f};
+                    float[] columnWidth = {15f, 65f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f,15f,15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 20f, 40f};
                     Table table = new Table(columnWidth);
                     int n = 9;
-                    int total = 0, fpack = 0, other = 0, other1 = 0, water = 0, lassi = 0, cbar = 0, jsoda = 0, sSoda = 0, orange = 0, lemon = 0, kokam = 0, pachak = 0, ssrbt = 0, sarbat = 0, wala = 0, vanilla = 0, pista = 0, stwbry = 0, btrsch = 0, mango = 0, lsoda = 0, llemon = 0, lorange = 0, kulfi = 0;
+                    int total = 0, fpack = 0, cones = 0, coneb = 0, other = 0, other1 = 0, water = 0, lassi = 0, cbar = 0, jsoda = 0, sSoda = 0, orange = 0, lemon = 0, kokam = 0, pachak = 0, ssrbt = 0, sarbat = 0, wala = 0, vanilla = 0, pista = 0, stwbry = 0, btrsch = 0, mango = 0, lsoda = 0, llemon = 0, lorange = 0, kulfi = 0;
                     table.setHorizontalAlignment(HorizontalAlignment.CENTER);
                     table.setFontSize(n);
                     int m = 8;
@@ -2452,6 +2546,8 @@ public class ThirdFragment extends Fragment {
                     table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(25))).setBold())).setFontSize(m);
                     table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(26))).setBold())).setFontSize(m);
                     table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(27))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(28))).setBold())).setFontSize(m);
+                    table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(29))).setBold())).setFontSize(m);
                     table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf("Date Time")).setBold())).setFontSize(m);
 
 
@@ -2482,17 +2578,19 @@ public class ThirdFragment extends Fragment {
                         table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(24)))));
                         table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(25)))));
                         table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(26)))));
-                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(27))).setBold()));
-                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(28)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(27)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(28)))));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(29))).setBold()));
+                        table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(30)))));
 
 
-                        if (res.getInt(25) != 0 || res.getInt(26) != 0) {
+                        if (res.getInt(27) != 0 || res.getInt(28) != 0) {
                             boolean add = false;
                             boolean add1 = false;
-                            if (res.getInt(25) != 0) {
+                            if (res.getInt(27) != 0) {
                                 add = true;
                             }
-                            if (res.getInt(26) != 0) {
+                            if (res.getInt(28) != 0) {
                                 add1 = true;
                             }
                             if (add == true && add1 == true) {
@@ -2510,30 +2608,30 @@ public class ThirdFragment extends Fragment {
                             table1.addHeaderCell(new Cell().add(new Paragraph(String.valueOf("No")).setBold())).setFontSize(m);
 
 
-                            if (res.getInt(25) != 0) {
-                                table1.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(30))).setBold())).setFontSize(m);
+                            if (res.getInt(27) != 0) {
+                                table1.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(32))).setBold())).setFontSize(m);
                             }
-                            if (res.getInt(26) != 0) {
-                                table1.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(31))).setBold())).setFontSize(m);
+                            if (res.getInt(28) != 0) {
+                                table1.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(33))).setBold())).setFontSize(m);
                             }
 
                             table1.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(1)))));
-                            if (res.getInt(25) != 0) {
-                                table1.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(30)))));
+                            if (res.getInt(27) != 0) {
+                                table1.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(32)))));
                             }
-                            if (res.getInt(26) != 0) {
-                                table1.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(31)))));
+                            if (res.getInt(28) != 0) {
+                                table1.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(33)))));
                             }
 
 
-                            otherMap = String.valueOf(res.getInt(25));
-                            otherMap1 = String.valueOf(res.getInt(26));
+                            otherMap = String.valueOf(res.getInt(27));
+                            otherMap1 = String.valueOf(res.getInt(28));
 
                             table1.addCell(new Cell().add(new Paragraph(String.valueOf("Total")).setBold()));
-                            if (res.getInt(25) != 0) {
+                            if (res.getInt(27) != 0) {
                                 table1.addCell(new Cell().add(new Paragraph(String.valueOf(otherMap)).setBold()));
                             }
-                            if (res.getInt(26) != 0) {
+                            if (res.getInt(28) != 0) {
                                 table1.addCell(new Cell().add(new Paragraph(String.valueOf(otherMap1)).setBold()));
                             }
 
@@ -2561,9 +2659,11 @@ public class ThirdFragment extends Fragment {
                         kulfi = kulfi + res.getInt(22);
                         cbar = cbar + res.getInt(23);
                         fpack = fpack + res.getInt(24);
-                        other = other + res.getInt(25);
-                        other1 = other1 + res.getInt(26);
-                        total = total + res.getInt(27);
+                        cones = cones + res.getInt(25);
+                        coneb = coneb + res.getInt(26);
+                        other = other + res.getInt(27);
+                        other1 = other1 + res.getInt(28);
+                        total = total + res.getInt(29);
                     }
 
                     table.addCell(new Cell().add(new Paragraph(String.valueOf("Total")).setBold()));
@@ -2590,6 +2690,8 @@ public class ThirdFragment extends Fragment {
                     table.addCell(new Cell().add(new Paragraph(String.valueOf(kulfi)).setBold()));
                     table.addCell(new Cell().add(new Paragraph(String.valueOf(cbar)).setBold()));
                     table.addCell(new Cell().add(new Paragraph(String.valueOf(fpack)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(cones)).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(coneb)).setBold()));
                     table.addCell(new Cell().add(new Paragraph(String.valueOf(other)).setBold()));
                     table.addCell(new Cell().add(new Paragraph(String.valueOf(other1)).setBold()));
                     table.addCell(new Cell().add(new Paragraph(String.valueOf(total)).setBold()));
@@ -2621,6 +2723,8 @@ public class ThirdFragment extends Fragment {
                     table.addCell(new Cell().add(new Paragraph(String.valueOf(kulfi / prefs.getInt("kulfi", 10))).setBold()));
                     table.addCell(new Cell().add(new Paragraph(String.valueOf(cbar / prefs.getInt("cbar", 10))).setBold()));
                     table.addCell(new Cell().add(new Paragraph(String.valueOf(fpack / prefs.getInt("fpack", 100))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(cones / prefs.getInt("cones", 15))).setBold()));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(coneb / prefs.getInt("coneb", 25))).setBold()));
                     table.addCell(new Cell().add(new Paragraph(String.valueOf(other)).setBold()));
                     table.addCell(new Cell().add(new Paragraph(String.valueOf(other1)).setBold()));
                     table.addCell(new Cell().add(new Paragraph(String.valueOf("-")).setBold()));
@@ -2692,6 +2796,8 @@ public class ThirdFragment extends Fragment {
                     other = 0;
                     other1 = 0;
                     fpack = 0;
+                    cones = 0;
+                    coneb = 0;
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
@@ -3007,7 +3113,7 @@ public class ThirdFragment extends Fragment {
         PdfWriter pdfWriter = new PdfWriter(file);
         PdfDocument pdfDocument = new PdfDocument(pdfWriter);
         Document document = new Document(pdfDocument);
-        pdfDocument.setDefaultPageSize(PageSize.A4.rotate());
+        pdfDocument.setDefaultPageSize((PageSize) PageSize.A4.rotate().setWidth(1000));
         document.setMargins(20f, 10f, 10f, 10f);
 //                document.setProperty(Property.LEADING, new Leading(Leading.MULTIPLIED, 1.2f));
         //image logic
@@ -3019,14 +3125,14 @@ public class ThirdFragment extends Fragment {
 
         Paragraph p2 = new Paragraph("Reports\nFrom date:" + fromDate.getText().toString() + " To date:" + toDate.getText().toString()).setBold().setFontSize(15).setTextAlignment(TextAlignment.CENTER);
         if(isDetailed == true){
-            columnWidth = new float[]{15f, 65f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 20f, 20f, 40f, 40f};
+            columnWidth = new float[]{15f, 65f, 15f, 15f,15f,15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 20f, 20f, 40f, 40f};
         }else {
-            columnWidth = new float[]{15f, 65f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 20f};
+            columnWidth = new float[]{15f, 65f, 15f, 15f,15f,15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 15f, 20f};
         }
 
         Table table = new Table(columnWidth);
         int n = 9;
-        int total = 0, fpack = 0, other = 0, other1 = 0, water = 0, lassi = 0, cbar = 0, jsoda = 0, sSoda = 0, orange = 0, lemon = 0, kokam = 0, pachak = 0, ssrbt = 0, sarbat = 0, wala = 0, vanilla = 0, pista = 0, stwbry = 0, btrsch = 0, mango = 0, lsoda = 0, llemon = 0, lorange = 0, kulfi = 0;
+        int total = 0, fpack = 0,cones=0,coneb=0, other = 0, other1 = 0, water = 0, lassi = 0, cbar = 0, jsoda = 0, sSoda = 0, orange = 0, lemon = 0, kokam = 0, pachak = 0, ssrbt = 0, sarbat = 0, wala = 0, vanilla = 0, pista = 0, stwbry = 0, btrsch = 0, mango = 0, lsoda = 0, llemon = 0, lorange = 0, kulfi = 0;
         table.setHorizontalAlignment(HorizontalAlignment.CENTER);
         table.setFontSize(n);
         int m = 8;
@@ -3059,10 +3165,12 @@ public class ThirdFragment extends Fragment {
         table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(25))).setBold())).setFontSize(m);
         table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(26))).setBold())).setFontSize(m);
         table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(27))).setBold())).setFontSize(m);
+        table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(28))).setBold())).setFontSize(m);
+        table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(29))).setBold())).setFontSize(m);
         if(isDetailed==true){
             table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf("Date Time")).setBold())).setFontSize(m);
-            table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(30))).setBold())).setFontSize(m);
-            table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(31))).setBold())).setFontSize(m);
+            table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(32))).setBold())).setFontSize(m);
+            table.addHeaderCell(new Cell().add(new Paragraph(String.valueOf(res.getColumnName(33))).setBold())).setFontSize(m);
         }
         while (res.moveToNext()) {
             if(isDetailed== true){
@@ -3092,11 +3200,13 @@ public class ThirdFragment extends Fragment {
                 table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(24)))));
                 table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(25)))));
                 table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(26)))));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(27))).setBold()));
+                table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(27)))));
+                table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(28)))));
+                table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getInt(29))).setBold()));
                 if(isDetailed==true){
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(29)))));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(30)))));
                     table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(31)))));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(32)))));
+                    table.addCell(new Cell().add(new Paragraph(String.valueOf(res.getString(33)))));
                 }
             }
             orange = orange + res.getInt(3);
@@ -3121,9 +3231,11 @@ public class ThirdFragment extends Fragment {
             kulfi = kulfi + res.getInt(22);
             cbar = cbar + res.getInt(23);
             fpack = fpack + res.getInt(24);
-            other = other + res.getInt(25);
-            other1 = other1 + res.getInt(26);
-            total = total + res.getInt(27);
+            cones = cones + res.getInt(25);
+            coneb = coneb + res.getInt(26);
+            other = other + res.getInt(27);
+            other1 = other1 + res.getInt(28);
+            total = total + res.getInt(29);
         }
 
         table.addCell(new Cell().add(new Paragraph(String.valueOf("Total")).setBold()));
@@ -3150,6 +3262,8 @@ public class ThirdFragment extends Fragment {
         table.addCell(new Cell().add(new Paragraph(String.valueOf(kulfi)).setBold()));
         table.addCell(new Cell().add(new Paragraph(String.valueOf(cbar)).setBold()));
         table.addCell(new Cell().add(new Paragraph(String.valueOf(fpack)).setBold()));
+        table.addCell(new Cell().add(new Paragraph(String.valueOf(cones)).setBold()));
+        table.addCell(new Cell().add(new Paragraph(String.valueOf(coneb)).setBold()));
         table.addCell(new Cell().add(new Paragraph(String.valueOf(other)).setBold()));
         table.addCell(new Cell().add(new Paragraph(String.valueOf(other1)).setBold()));
         table.addCell(new Cell().add(new Paragraph(String.valueOf(total)).setBold()));
@@ -3185,6 +3299,8 @@ public class ThirdFragment extends Fragment {
         table.addCell(new Cell().add(new Paragraph(String.valueOf(kulfi / prefs.getInt("kulfi", 10))).setBold()));
         table.addCell(new Cell().add(new Paragraph(String.valueOf(cbar / prefs.getInt("cbar", 10))).setBold()));
         table.addCell(new Cell().add(new Paragraph(String.valueOf(fpack / prefs.getInt("fpack", 100))).setBold()));
+        table.addCell(new Cell().add(new Paragraph(String.valueOf(cones / prefs.getInt("cones", 15))).setBold()));
+        table.addCell(new Cell().add(new Paragraph(String.valueOf(coneb / prefs.getInt("coneb", 25))).setBold()));
         table.addCell(new Cell().add(new Paragraph(String.valueOf(other)).setBold()));
         table.addCell(new Cell().add(new Paragraph(String.valueOf(other1)).setBold()));
         table.addCell(new Cell().add(new Paragraph(String.valueOf("-")).setBold()));
@@ -3250,6 +3366,8 @@ public class ThirdFragment extends Fragment {
         other = 0;
         other1 = 0;
         fpack = 0;
+        cones = 0;
+        coneb = 0;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {

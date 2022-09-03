@@ -38,7 +38,7 @@ public class SecondFragment extends Fragment {
     int finalTotal = 0;
     int IceCreamFinalTotal = 0;
     String vendor_name = "Rohit";
-    int vanilla,pista,sbry,mango,kulfi,cbar,btrSch,fpack;
+    int vanilla,pista,sbry,mango,kulfi,cbar,btrSch,fpack,cones,coneb;
     int vanillaTotal = 0;
     int pistaTotal = 0;
     int sbryTotal = 0;
@@ -75,6 +75,8 @@ public class SecondFragment extends Fragment {
     SharedPreferences.Editor editor;
     HashMap<String, Integer> itemsBill2;
     int custItems1;
+    int conesTotal=0;
+    int conebTotal=0;
 
     public SecondFragment() {
         // Required empty public constructor
@@ -108,6 +110,8 @@ public class SecondFragment extends Fragment {
         kulfi = prefs.getInt("kulfi",10);
         pista = prefs.getInt("pista",15);
         fpack = prefs.getInt("fpack",100);
+        cones = prefs.getInt("cones",15);
+        coneb = prefs.getInt("coneb",25);
 //        ssrbt = prefs.getInt("ssrbt",20);
 //        lorange = prefs.getInt("lorange",20);
 //        Llemon = prefs.getInt("llemon",20);
@@ -340,7 +344,7 @@ public class SecondFragment extends Fragment {
             public void onClick(View v) {
 //                DbManager db = new DbManager(getActivity().getApplicationContext());
                 Map<String,Item> filteredMap2 = new HashMap<>();
-                if (vanillaTotal == 0 && pistaTotal == 0 && sbryTotal == 0 && mangoTotal == 0 && btrSchTotal==0 && kulfiTotal == 0 && cbarTotal == 0 && fpackTotal == 0) {
+                if (vanillaTotal == 0 && pistaTotal == 0 && sbryTotal == 0 && mangoTotal == 0 && btrSchTotal==0 && kulfiTotal == 0 && cbarTotal == 0 && fpackTotal == 0 && conesTotal == 0 && conebTotal == 0) {
                     if(etOther1.getText().toString().isEmpty() || etOther1.getText().equals("0")){
                         Toast.makeText(getActivity().getApplicationContext(), "Please choose QTY", Toast.LENGTH_SHORT).show();
                     }
@@ -367,6 +371,12 @@ public class SecondFragment extends Fragment {
                     }
                     if (fpackTotal == 0) {
                         items2.remove("fpack");
+                    }
+                    if (conesTotal == 0) {
+                        items2.remove("cones");
+                    }
+                    if (conebTotal == 0) {
+                        items2.remove("coneb");
                     }
 //                    if (finalTotal == 0) {
 //                        IceCreamFinalTotal = finalTotal;
@@ -459,6 +469,20 @@ public class SecondFragment extends Fragment {
                         items2.put("fpack", fpackObj);
                     } else {
                         items2.remove("fpack");
+                    }
+                    Item conesObj = null;
+                    if (conesTotal != 0) {
+                        conesObj = new Item(cones, conesTotal / cones, conesTotal);
+                        items2.put("cones", conesObj);
+                    } else {
+                        items2.remove("cones");
+                    }
+                    Item conebObj = null;
+                    if (conebTotal != 0) {
+                        conebObj = new Item(coneb, conebTotal / coneb, conebTotal);
+                        items2.put("coneb", conebObj);
+                    } else {
+                        items2.remove("coneb");
                     }
                     if (finalTotal != 0) {
                         if(!etOther1.getText().toString().isEmpty() && !etOther1.getText().equals("0")){
@@ -570,6 +594,83 @@ public class SecondFragment extends Fragment {
 //
 //
 //
+        // rest 2
+
+        tv17.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                final View customLayout = getLayoutInflater().inflate(R.layout.custom_layout,null);
+                builder.setView(customLayout);
+                builder.setTitle("Cone(S) Current Rate:"+cones);
+                builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText et = customLayout.findViewById(R.id.editText);
+                        EditText et1 = customLayout.findViewById(R.id.editText1);
+                        if(!et.getText().toString().equals("")){
+                            editor.putInt("cones",Integer.parseInt(et.getText().toString())).apply();
+                            Toast.makeText(getContext(), "Cone(S) rate updated:"+prefs.getInt("cones",15), Toast.LENGTH_SHORT).show();
+                            seek8.setProgress(0);
+                        }else{
+                            cones = prefs.getInt("cones",15);
+                        }
+                        if(!et1.getText().toString().equals("")){
+                            seek8.setMax(Integer.parseInt(et1.getText().toString()));
+                        }else{
+                            seek8.setMax(DEF_MAX);
+                        }
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                return false;
+            }
+        });
+
+        tv22.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                final View customLayout = getLayoutInflater().inflate(R.layout.custom_layout,null);
+                builder.setView(customLayout);
+                builder.setTitle("Cone(B) Current Rate:"+coneb);
+                builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText et = customLayout.findViewById(R.id.editText);
+                        EditText et1 = customLayout.findViewById(R.id.editText1);
+                        if(!et.getText().toString().equals("")){
+                            editor.putInt("coneb",Integer.parseInt(et.getText().toString())).apply();
+                            Toast.makeText(getContext(), "Cone(B) rate updated:"+prefs.getInt("coneb",25), Toast.LENGTH_SHORT).show();
+                            seek10.setProgress(0);
+                        }else{
+                            coneb = prefs.getInt("coneb",25);
+                        }
+                        if(!et1.getText().toString().equals("")){
+                            seek10.setMax(Integer.parseInt(et1.getText().toString()));
+                        }else{
+                            seek10.setMax(DEF_MAX);
+                        }
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                return false;
+            }
+        });
+
+        //
 
         tv14.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -607,6 +708,50 @@ public class SecondFragment extends Fragment {
                 return false;
             }
         });
+
+        //rest 2 seeks
+
+        seek8.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                tv17.setText(String.valueOf(seekBar.getProgress()));
+                cones = prefs.getInt("cones",15);
+                conesTotal = Integer.parseInt(tv17.getText().toString()) * cones;
+                refreshTotal();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        seek10.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                tv22.setText(String.valueOf(seekBar.getProgress()));
+                coneb = prefs.getInt("coneb",25);
+                conebTotal = Integer.parseInt(tv22.getText().toString()) * coneb;
+                refreshTotal();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        //
 
         seek7.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -1070,6 +1215,12 @@ public class SecondFragment extends Fragment {
         if(seek7.getProgress() != 0){
             seek7.setProgress(0);
         }
+        if(seek8.getProgress() != 0){
+            seek8.setProgress(0);
+        }
+        if(seek10.getProgress() != 0){
+            seek10.setProgress(0);
+        }
     }
 
 
@@ -1120,6 +1271,16 @@ public class SecondFragment extends Fragment {
         } else {
             finalTotal -= otherAmt1;
         }
+        if (conesTotal != 0) {
+            finalTotal += conesTotal;
+        } else {
+            finalTotal -= conesTotal;
+        }
+        if (conebTotal != 0) {
+            finalTotal += conebTotal;
+        } else {
+            finalTotal -= conebTotal;
+        }
         Date now = new Date();
         long timestamp = now.getTime();
         SimpleDateFormat sdf = null;
@@ -1127,7 +1288,7 @@ public class SecondFragment extends Fragment {
             sdf = new SimpleDateFormat("MM/dd/yyyy  hh:mm:ss a");
         }
         String dateStr = sdf.format(timestamp);
-        tcf.setText("Vanilla: " + vanillaTotal + "\nPista: " + pistaTotal + "\nStrBry: " + sbryTotal + "\nmango: " + mangoTotal + "\nBtrSch:" + btrSchTotal + "\nKulfi:"+kulfiTotal+"\nCbar:"+cbarTotal+"\nFamily Pack:"+fpackTotal+"\nOther1:"+otherAmt1+"\n----------------\nTotal: " + finalTotal + "\nDate & Time: " + dateStr);
+        tcf.setText("Vanilla: " + vanillaTotal + "\nPista: " + pistaTotal + "\nStrBry: " + sbryTotal + "\nmango: " + mangoTotal + "\nBtrSch:" + btrSchTotal + "\nKulfi:"+kulfiTotal+"\nCbar:"+cbarTotal+"\nFamily Pack:"+fpackTotal+"\nCone(S):"+conesTotal+"\nCone(B):"+conebTotal+"\nOther1:"+otherAmt1+"\n----------------\nTotal: " + finalTotal + "\nDate & Time: " + dateStr);
     }
 
     public void makeClear2() {

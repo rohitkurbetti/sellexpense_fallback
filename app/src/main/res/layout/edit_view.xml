@@ -487,6 +487,44 @@
 
         </TableRow>
 
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Cone(S)"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/conesu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Cone(S) rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:gravity="center_horizontal"
+                android:text="Cone(B)"
+                android:textAlignment="center"></TextView>
+
+            <EditText
+                android:id="@+id/conebu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Cone(B) rate"
+                android:inputType="number"></EditText>
+
+        </TableRow>
+
 
 
         <TableRow>

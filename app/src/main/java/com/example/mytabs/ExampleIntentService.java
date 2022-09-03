@@ -213,14 +213,16 @@ public class ExampleIntentService extends IntentService {
                         int kulfi = Integer.parseInt(nexLine1[21]);
                         int cbar = Integer.parseInt(nexLine1[22]);
                         int fpack = Integer.parseInt(nexLine1[23]);
-                        int other = Integer.parseInt(nexLine1[24]);
-                        int other1 = Integer.parseInt(nexLine1[25]);
-                        int total = Integer.parseInt(nexLine1[26]);
-                        String addedDateTime = String.valueOf(nexLine1[27]);
-                        String date = String.valueOf(nexLine1[28]);
-                        String otherItems = String.valueOf(nexLine1[29]);
-                        String otherItems1 = String.valueOf(nexLine1[30]);
-                        db.addFromCSV1(billNo,custName,orange,kokam,lemon,sarbat,pachak,wala,lsoda,ssrbt,lorange,llemon,jsoda,sSoda,water,lassi,vanilla,pista,stwbry,mango,btrsch,kulfi,cbar,fpack,other,other1,total,addedDateTime,date,otherItems,otherItems1);
+                        int cones = Integer.parseInt(nexLine1[24]);
+                        int coneb = Integer.parseInt(nexLine1[25]);
+                        int other = Integer.parseInt(nexLine1[26]);
+                        int other1 = Integer.parseInt(nexLine1[27]);
+                        int total = Integer.parseInt(nexLine1[28]);
+                        String addedDateTime = String.valueOf(nexLine1[29]);
+                        String date = String.valueOf(nexLine1[30]);
+                        String otherItems = String.valueOf(nexLine1[31]);
+                        String otherItems1 = String.valueOf(nexLine1[32]);
+                        db.addFromCSV1(billNo,custName,orange,kokam,lemon,sarbat,pachak,wala,lsoda,ssrbt,lorange,llemon,jsoda,sSoda,water,lassi,vanilla,pista,stwbry,mango,btrsch,kulfi,cbar,fpack,cones,coneb,other,other1,total,addedDateTime,date,otherItems,otherItems1);
 //                    db.updateExpOne(id,selling,expense,profit,date,expenses);
                     }
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -352,13 +354,17 @@ public class ExampleIntentService extends IntentService {
                     fw1.append(",");
                     fw1.append(String.valueOf(res1.getInt(27)));
                     fw1.append(",");
-                    fw1.append(String.valueOf(res1.getString(28)));
+                    fw1.append(String.valueOf(res1.getInt(28)));
                     fw1.append(",");
-                    fw1.append(String.valueOf(res1.getString(29)));
+                    fw1.append(String.valueOf(res1.getInt(29)));
                     fw1.append(",");
                     fw1.append(String.valueOf(res1.getString(30)));
                     fw1.append(",");
                     fw1.append(String.valueOf(res1.getString(31)));
+                    fw1.append(",");
+                    fw1.append(String.valueOf(res1.getString(32)));
+                    fw1.append(",");
+                    fw1.append(String.valueOf(res1.getString(33)));
                     fw1.append("\n");
                 }
                 fw1.flush();
@@ -380,7 +386,7 @@ public class ExampleIntentService extends IntentService {
 
             Log.d(TAG,"Done Exporting log f");
 
-        } else if (input.equals("fillTable")){
+        } else if (input.equals("fillTable1")){
 //            t = v.findViewById(R.id.tbEstimation);
 //            srno1 = v.findViewById(R.id.serialNo);
 //            tvTotal =v.findViewById(R.id.total1);
@@ -440,9 +446,9 @@ public class ExampleIntentService extends IntentService {
                 while(res.moveToNext()){
                     TableRow row = new TableRow(t1.getActivity());
                     row.setPadding(50,10,25,10);
-                    todayTotal = res.getInt(27);
                     srno = res.getInt(1);
-                    currDate = res.getString(28);
+                    todayTotal = res.getInt(29);
+                    currDate = res.getString(30);
 
                     t1.srno1 = new TextView(t1.getActivity());
                     t1.srno1.setText(String.valueOf(srno));
@@ -519,10 +525,16 @@ public class ExampleIntentService extends IntentService {
                         b.putInt("fpack", Integer.parseInt(String.valueOf(res.getInt(24))));
                     }
                     if(!String.valueOf(res.getInt(25)).equals("0")) {
-                        b.putInt("other", Integer.parseInt(String.valueOf(res.getInt(25))));
+                        b.putInt("cones", Integer.parseInt(String.valueOf(res.getInt(25))));
                     }
                     if(!String.valueOf(res.getInt(26)).equals("0")) {
-                        b.putInt("other1", Integer.parseInt(String.valueOf(res.getInt(26))));
+                        b.putInt("coneb", Integer.parseInt(String.valueOf(res.getInt(26))));
+                    }
+                    if(!String.valueOf(res.getInt(27)).equals("0")) {
+                        b.putInt("other", Integer.parseInt(String.valueOf(res.getInt(27))));
+                    }
+                    if(!String.valueOf(res.getInt(28)).equals("0")) {
+                        b.putInt("other1", Integer.parseInt(String.valueOf(res.getInt(28))));
                     }
 //                if(!String.valueOf(res.getInt(28)).equals("0")) {
 //                    b.putString("datetime", (String.valueOf(res.getString(28))));
@@ -598,6 +610,12 @@ public class ExampleIntentService extends IntentService {
                         if(bundle.getInt("fpack") != 0){
                             str.append(" fpack:"+bundle.getInt("fpack"));
                         }
+                        if(bundle.getInt("cones") != 0){
+                            str.append(" cones:"+bundle.getInt("cones"));
+                        }
+                        if(bundle.getInt("coneb") != 0){
+                            str.append(" coneb:"+bundle.getInt("coneb"));
+                        }
                         if(bundle.getInt("other") != 0){
                             str.append(" other:"+bundle.getInt("other"));
                         }
@@ -615,7 +633,7 @@ public class ExampleIntentService extends IntentService {
                     t1.currDate1 = new TextView(t1.getActivity());
                     t1.currDate1.setText(String.valueOf(currDate));
                     t1.currDate1.setPadding(60,0,25,0);
-                    totalAll += Integer.parseInt(String.valueOf(res.getInt(27)));
+                    totalAll += Integer.parseInt(String.valueOf(res.getInt(29)));
                     row.addView(t1.srno1);
                     row.addView(t1.tvTotal);
                     row.addView(t1.currDate1);

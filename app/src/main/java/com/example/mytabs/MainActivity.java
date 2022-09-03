@@ -2,6 +2,7 @@ package com.example.mytabs;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
@@ -50,6 +51,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -79,6 +83,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -105,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
     public SecondFragment f2;
     public ThirdFragment f3;
     Long billNo_generated = 0L;
+    EditText etSelDate;
     int masterFinal = 0;
     Context context;
     String sb;
@@ -469,14 +475,16 @@ public class MainActivity extends AppCompatActivity {
                         int kulfi = Integer.parseInt(nexLine1[21]);
                         int cbar = Integer.parseInt(nexLine1[22]);
                         int fpack = Integer.parseInt(nexLine1[23]);
-                        int other = Integer.parseInt(nexLine1[24]);
-                        int other1 = Integer.parseInt(nexLine1[25]);
-                        int total = Integer.parseInt(nexLine1[26]);
-                        String addedDateTime = String.valueOf(nexLine1[27]);
-                        String date = String.valueOf(nexLine1[28]);
-                        String otherItems = String.valueOf(nexLine1[29]);
-                        String otherItems1 = String.valueOf(nexLine1[30]);
-                        db.addFromCSV1(billNo, custName, orange, kokam, lemon, sarbat, pachak, wala, lsoda, ssrbt, lorange, llemon, jsoda, sSoda, water, lassi, vanilla, pista, stwbry, mango, btrsch, kulfi, cbar, fpack, other, other1, total, addedDateTime, date, otherItems, otherItems1);
+                        int cones = Integer.parseInt(nexLine1[24]);
+                        int coneb = Integer.parseInt(nexLine1[25]);
+                        int other = Integer.parseInt(nexLine1[26]);
+                        int other1 = Integer.parseInt(nexLine1[27]);
+                        int total = Integer.parseInt(nexLine1[28]);
+                        String addedDateTime = String.valueOf(nexLine1[29]);
+                        String date = String.valueOf(nexLine1[30]);
+                        String otherItems = String.valueOf(nexLine1[31]);
+                        String otherItems1 = String.valueOf(nexLine1[32]);
+                        db.addFromCSV1(billNo, custName, orange, kokam, lemon, sarbat, pachak, wala, lsoda, ssrbt, lorange, llemon, jsoda, sSoda, water, lassi, vanilla, pista, stwbry, mango, btrsch, kulfi, cbar, fpack,cones,coneb, other, other1, total, addedDateTime, date, otherItems, otherItems1);
 //                    db.updateExpOne(id,selling,expense,profit,date,expenses);
                     }
                     Toast.makeText(context, "Backup Restored Successfully", Toast.LENGTH_SHORT).show();
@@ -704,14 +712,16 @@ public class MainActivity extends AppCompatActivity {
                     int kulfi = Integer.parseInt(nexLine1[21]);
                     int cbar = Integer.parseInt(nexLine1[22]);
                     int fpack = Integer.parseInt(nexLine1[23]);
-                    int other = Integer.parseInt(nexLine1[24]);
-                    int other1 = Integer.parseInt(nexLine1[25]);
-                    int total = Integer.parseInt(nexLine1[26]);
-                    String addedDateTime = String.valueOf(nexLine1[27]);
-                    String date = String.valueOf(nexLine1[28]);
-                    String otherItems = String.valueOf(nexLine1[28]);
-                    String otherItems1 = String.valueOf(nexLine1[28]);
-                    db.addFromCSV1(billNo, custName, orange, kokam, lemon, sarbat, pachak, wala, lsoda, ssrbt, lorange, llemon, jsoda, sSoda, water, lassi, vanilla, pista, stwbry, mango, btrsch, kulfi, cbar, fpack, other, other1, total, addedDateTime, date, otherItems, otherItems1);
+                    int cones = Integer.parseInt(nexLine1[24]);
+                    int coneb = Integer.parseInt(nexLine1[25]);
+                    int other = Integer.parseInt(nexLine1[26]);
+                    int other1 = Integer.parseInt(nexLine1[27]);
+                    int total = Integer.parseInt(nexLine1[28]);
+                    String addedDateTime = String.valueOf(nexLine1[29]);
+                    String date = String.valueOf(nexLine1[30]);
+                    String otherItems = String.valueOf(nexLine1[31]);
+                    String otherItems1 = String.valueOf(nexLine1[32]);
+                    db.addFromCSV1(billNo, custName, orange, kokam, lemon, sarbat, pachak, wala, lsoda, ssrbt, lorange, llemon, jsoda, sSoda, water, lassi, vanilla, pista, stwbry, mango, btrsch, kulfi, cbar, fpack,cones,coneb, other, other1, total, addedDateTime, date, otherItems, otherItems1);
 //                    db.updateExpOne(id,selling,expense,profit,date,expenses);
                 }
                 runOnUiThread(new Runnable() {
@@ -842,9 +852,13 @@ public class MainActivity extends AppCompatActivity {
                 fw1.append(",");
                 fw1.append(String.valueOf(res1.getInt(27)));
                 fw1.append(",");
-                fw1.append(String.valueOf(res1.getString(28)));
+                fw1.append(String.valueOf(res1.getInt(28)));
                 fw1.append(",");
-                fw1.append(String.valueOf(res1.getString(29)));
+                fw1.append(String.valueOf(res1.getInt(29)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getString(30)));
+                fw1.append(",");
+                fw1.append(String.valueOf(res1.getString(31)));
                 fw1.append("\n");
             }
             fw1.flush();
@@ -1036,6 +1050,13 @@ public class MainActivity extends AppCompatActivity {
                         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            if(etSelDate.getText().toString().isEmpty() ||
+                                    etSelDate.getText().toString().length()==0 ||
+                                    etSelDate.getText().toString().equals("")
+                            ){
+                                Toast.makeText(MainActivity.this, "Please Select Date", Toast.LENGTH_SHORT).show();
+                            }else {
+
 //                            Toast.makeText(getApplicationContext(), "Billing", Toast.LENGTH_SHORT).show();
                             masterFinal = f1.coldrinkFinalTotal + f2.IceCreamFinalTotal;
 //                            Toast.makeText(MainActivity.this, "FinalTotal:"+masterFinal, Toast.LENGTH_SHORT).show();
@@ -1057,7 +1078,7 @@ public class MainActivity extends AppCompatActivity {
                             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd");
                             String currDate = sdf1.format(now.getTime());
                             //tcf.setText("Orange: "+f1.orangeTotal+"\nKokam: "+f1.kokamTotal+"\nLemon: "+f1.lemonTotal+"\nSarbat: "+f1.sarbatTotal+"\n----------------\nTotal: "+f1.finalTotal+"\nDate & Time: "+dateStr);
-                            String res = db.addRecord(billNo_generated, validCustName, f1.orangeTotal, f1.kokamTotal, f1.lemonTotal, f1.sarbatTotal, f1.pachakTotal, f1.walaTotal, f1.lSodaTotal, f1.ssrbtTotal, f1.lorangeTotal, f1.LlemonTotal, f1.jeeraTotal, f1.sSodaTotal, f1.waterTotal, f1.lassiTotal, f2.vanillaTotal, f2.pistaTotal, f2.sbryTotal, f2.mangoTotal, f2.btrSchTotal, f2.kulfiTotal, f2.cbarTotal, f2.fpackTotal, f1.otherAmt, f2.otherAmt1, masterFinal, dateStr, currDate, f1.sbTemp != null ? String.valueOf(f1.sbTemp) : "", f2.sbTemp1 != null ? String.valueOf(f2.sbTemp1) : "");
+                            String res = db.addRecord(billNo_generated, validCustName, f1.orangeTotal, f1.kokamTotal, f1.lemonTotal, f1.sarbatTotal, f1.pachakTotal, f1.walaTotal, f1.lSodaTotal, f1.ssrbtTotal, f1.lorangeTotal, f1.LlemonTotal, f1.jeeraTotal, f1.sSodaTotal, f1.waterTotal, f1.lassiTotal, f2.vanillaTotal, f2.pistaTotal, f2.sbryTotal, f2.mangoTotal, f2.btrSchTotal, f2.kulfiTotal, f2.cbarTotal, f2.fpackTotal,f2.conesTotal, f2.conebTotal, f1.otherAmt, f2.otherAmt1, masterFinal, dateStr, currDate, f1.sbTemp != null ? String.valueOf(f1.sbTemp) : "", f2.sbTemp1 != null ? String.valueOf(f2.sbTemp1) : "");
                             //upload on FireStore
 //                            AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
 //                            builder1.setCancelable(false);
@@ -1088,7 +1109,7 @@ public class MainActivity extends AppCompatActivity {
                                 //permission allowed
 //                                printInvoice(billNo_generated, map, masterFinal, null, null);
                                 try {
-                                    printInvoice1(billNo_generated, map, masterFinal, null, validCustName);
+                                    printInvoice1(billNo_generated, map, masterFinal, null, validCustName, dateStr, currDate);
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
                                 }
@@ -1123,6 +1144,7 @@ public class MainActivity extends AppCompatActivity {
                             if (f2.itemsBill2 != null) {
                                 f2.itemsBill2.clear();
                             }
+                        }
                         }
 
                         private void clearAll() {
@@ -1162,13 +1184,197 @@ public class MainActivity extends AppCompatActivity {
                         sb = "Customer Name: ";
                     }
                     sb = sb + "\nItems Selected:";
-                    builder.setView(customView);
+
+                    etSelDate = customView.findViewById(R.id.selDate);
+                    etSelDate.setText(String.valueOf(new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a").format(new Date().getTime())));
+                    etSelDate.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            final Calendar c = Calendar.getInstance();
+                            int mYear = c.get(Calendar.YEAR);
+                            int mMonth = c.get(Calendar.MONTH);
+                            int mDay = c.get(Calendar.DAY_OF_MONTH);
+                            DatePickerDialog datePickerDialog = new DatePickerDialog(view.getContext(), new DatePickerDialog.OnDateSetListener() {
+                                @Override
+                                public void onDateSet(DatePicker view, int year, int month, int day) {
+                                    String day1, month1;
+                                    if (view.getDayOfMonth() < 10) {
+                                        day1 = "0" + view.getDayOfMonth();
+                                    } else {
+                                        day1 = "" + view.getDayOfMonth();
+                                    }
+                                    if ((view.getMonth() + 1) < 10) {
+                                        month1 = "0" + (view.getMonth() + 1);
+                                    } else {
+                                        month1 = "" + (view.getMonth() + 1);
+                                    }
+                                    String min = day1 + "-" + month1 + "-" + view.getYear();
+                                    etSelDate.setText(day1 + "/" + month1 + "/" + view.getYear()+" "+"00:00:00 am");
+                                    String fromDateFmt = view.getYear() + "/" + month1 + "/" + day1;
+                                        System.out.println(fromDateFmt);
+                                    try {
+                                        DateFormat formatter;
+                                        Date date;
+                                        formatter = new SimpleDateFormat("dd-MM-yyyy");
+                                        date = (Date) formatter.parse(min);
+                                        long longDate = date.getTime();
+                                            System.out.println("<<<<<<<<" + longDate);
+                                            view.setMaxDate(longDate);
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, mYear, mMonth, mDay);
+                            long toPutMaxDate = 0;
+                            if (toPutMaxDate != 0) {
+                                    datePickerDialog.getDatePicker().setMaxDate(toPutMaxDate);
+                                } else {
+                                    datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+                                }
+                            datePickerDialog.show();
+                            datePickerDialog.setCancelable(false);
+                        }
+                    });
 //                    for (Map.Entry<String, Item> itr : map.entrySet()) {
 //                        sb.append(itr.getKey() + "   " + itr.getValue().getQty() + "   " + itr.getValue().getTotal() + "\n");
 //                    }
 //                    sb.append("----------------------\nTotal: " + Integer.parseInt(String.valueOf((Integer.parseInt(String.valueOf(f1.coldrinkFinalTotal))) + (Integer.parseInt(String.valueOf(f2.IceCreamFinalTotal))))) + "\n");
+                    builder.setView(customView);
                     builder.setMessage(sb);
                     AlertDialog dialog = builder.create();
+                    dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(DialogInterface dialogInterface) {
+                            Button b = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                            b.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    if(etSelDate.getText().toString().isEmpty() ||
+                                            etSelDate.getText().toString().length()==0 ||
+                                            etSelDate.getText().toString().equals("")
+                                    ){
+                                        Toast.makeText(MainActivity.this, "Please Select Date", Toast.LENGTH_SHORT).show();
+                                    }else {
+
+//                            Toast.makeText(getApplicationContext(), "Billing", Toast.LENGTH_SHORT).show();
+                                        masterFinal = f1.coldrinkFinalTotal + f2.IceCreamFinalTotal;
+//                            Toast.makeText(MainActivity.this, "FinalTotal:"+masterFinal, Toast.LENGTH_SHORT).show();
+                                        int latestBillNo = db.getLatestBillNo();
+                                        if (latestBillNo != 0) {
+                                            SharedPreferences sp = getSharedPreferences("key_code", MODE_PRIVATE);
+//                                int code = sp.getInt("code", 0);
+                                            sp.edit().putInt("code", latestBillNo).commit();
+                                            System.out.println("latest BillNo: " + latestBillNo);
+                                        }
+                                        billNo_generated = generateSeq();
+                                        Date custDate = new Date();
+//                                        long timestamp = now.getTime();
+                                        SimpleDateFormat sdf = null;
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                            sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
+                                        }
+                                        try {
+                                            custDate = sdf.parse(etSelDate.getText().toString());
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+                                        long timestamp = custDate.getTime();
+                                        String dateStr = sdf.format(timestamp);
+                                        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd");
+                                        String currDate = sdf1.format(timestamp);
+                                        System.out.println("<>>>>>>>>>>>>DateeeTT:"+dateStr+"\n"+currDate);
+                                        //tcf.setText("Orange: "+f1.orangeTotal+"\nKokam: "+f1.kokamTotal+"\nLemon: "+f1.lemonTotal+"\nSarbat: "+f1.sarbatTotal+"\n----------------\nTotal: "+f1.finalTotal+"\nDate & Time: "+dateStr);
+                                        String res = db.addRecord(billNo_generated, validCustName, f1.orangeTotal, f1.kokamTotal, f1.lemonTotal, f1.sarbatTotal, f1.pachakTotal, f1.walaTotal, f1.lSodaTotal, f1.ssrbtTotal, f1.lorangeTotal, f1.LlemonTotal, f1.jeeraTotal, f1.sSodaTotal, f1.waterTotal, f1.lassiTotal, f2.vanillaTotal, f2.pistaTotal, f2.sbryTotal, f2.mangoTotal, f2.btrSchTotal, f2.kulfiTotal, f2.cbarTotal, f2.fpackTotal,f2.conesTotal, f2.conebTotal, f1.otherAmt, f2.otherAmt1, masterFinal, dateStr, currDate, f1.sbTemp != null ? String.valueOf(f1.sbTemp) : "", f2.sbTemp1 != null ? String.valueOf(f2.sbTemp1) : "");
+                                        //upload on FireStore
+//                            AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
+//                            builder1.setCancelable(false);
+//                            builder1.setTitle("Choose");
+//                            builder1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialogInterface, int i) {
+//
+//                                }
+//                            });
+//                            View view_list = getLayoutInflater().inflate(R.layout.custom_list,null);
+//                            builder1.setView(view_list);
+//                            listView=view_list.findViewById(R.id.listView);
+//                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
+//                                    android.R.layout.simple_list_item_1, new String[]{"Bill_temp","Bill_super"});
+//                            listView.setAdapter(adapter);
+//                            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                                @Override
+//                                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+//                                    String value=adapter.getItem(position);
+                                        uploadToFireStore(billNo_generated, validCustName, dateStr, currDate);
+//                                }
+//                            });
+//                            pd.dismiss();
+//                            AlertDialog dialog1 = builder1.create();
+//                            dialog1.show();
+                                        if (checkStoragePermission()) {
+                                            //permission allowed
+//                                printInvoice(billNo_generated, map, masterFinal, null, null);
+                                            try {
+                                                printInvoice1(billNo_generated, map, masterFinal, null, validCustName, dateStr, currDate);
+                                            } catch (FileNotFoundException e) {
+                                                e.printStackTrace();
+                                            }
+                                        } else {
+                                            //permission denied
+                                            requestStoragePermissionExport();
+                                        }
+                                        Toast.makeText(getApplicationContext(), "Bill generated successfully "+billNo_generated, Toast.LENGTH_SHORT).show();
+                                        System.out.println("=====================data is going to be print======================");
+                                        System.out.println("BillNo: " + billNo_generated);
+                                        System.out.println("Time: " + dateStr);
+                                        System.out.println("FinalTotal:" + masterFinal);
+                                        f1.coldrinkFinalTotal = 0;
+                                        f2.IceCreamFinalTotal = 0;
+                                        f1.finalTotal = 0;
+                                        f2.finalTotal = 0;
+                                        f1.otherAmt = 0;
+                                        f2.otherAmt1 = 0;
+                                        validCustName = "";
+                                        clearAll();
+                                        map.clear();
+                                        if (f1.sbTemp != null) {
+                                            f1.sbTemp.delete(0, f1.sbTemp.length());
+                                        }
+
+                                        if (f2.sbTemp1 != null) {
+                                            f2.sbTemp1.delete(0, f2.sbTemp1.length());
+                                        }
+                                        if (f1.itemsBill != null) {
+                                            f1.itemsBill.clear();
+                                        }
+                                        if (f2.itemsBill2 != null) {
+                                            f2.itemsBill2.clear();
+                                        }
+                                        dialog.dismiss();
+                                    }
+                                }
+                                private void clearAll() {
+                                    f1.finalTotal = 0;
+                                    f2.finalTotal = 0;
+                                    if (!f1.items.isEmpty()) {
+                                        f1.resetAllseeks1();
+                                    }
+                                    if (!f2.items2.isEmpty()) {
+                                        f2.resetAllseeks2();
+                                    }
+                                    f1.coldrinkFinalTotal = 0;
+                                    f2.IceCreamFinalTotal = 0;
+                                    f1.etOther.setText("");
+                                    f2.etOther1.setText("");
+                                    validCustName = "";
+                                    f1.items.clear();
+                                    f2.items2.clear();
+                                    f1.custName.setText(validCustName);
+                                    map.clear();
+                                }
+                            });
+                        }
+                    });
                     dialog.show();
                 } else {
 //                    map.clear();
@@ -1213,6 +1419,8 @@ public class MainActivity extends AppCompatActivity {
                 TextView tbKulfi = customView.findViewById(R.id.kulfi);
                 TextView tbCbar = customView.findViewById(R.id.cbar);
                 TextView tbFpack = customView.findViewById(R.id.fpack);
+                TextView tbCones = customView.findViewById(R.id.cones);
+                TextView tbConeb = customView.findViewById(R.id.coneb);
                 TextView tbOther = customView.findViewById(R.id.other);
                 TextView tbOther1 = customView.findViewById(R.id.other1);
                 TextView tb16 = customView.findViewById(R.id.total);
@@ -1325,6 +1533,16 @@ public class MainActivity extends AppCompatActivity {
                         tvFpack.setText(String.valueOf(document.getData().containsKey("fpack")? Integer.parseInt(String.valueOf(document.getData().get("fpack"))) :0));
                         tvFpack.setGravity(Gravity.CENTER_HORIZONTAL);
 
+                        TextView tvCones = new TextView(customView.getContext());
+                        tvCones.setText(String.valueOf(document.getData().containsKey("cones")? Integer.parseInt(String.valueOf(document.getData().get("cones"))) :0));
+                        tvCones.setGravity(Gravity.CENTER_HORIZONTAL);
+
+                        TextView tvConeb = new TextView(customView.getContext());
+                        tvConeb.setText(String.valueOf(document.getData().containsKey("coneb")? Integer.parseInt(String.valueOf(document.getData().get("coneb"))) :0));
+                        tvConeb.setGravity(Gravity.CENTER_HORIZONTAL);
+
+
+
                         TextView tvOther = new TextView(customView.getContext());
                         tvOther.setText(String.valueOf(document.getData().containsKey("otherAmt")?  Integer.parseInt(String.valueOf( document.getData().get("otherAmt"))) :0));
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -1373,6 +1591,8 @@ public class MainActivity extends AppCompatActivity {
                             tbKulfi.setTextColor(Color.WHITE);
                             tbCbar.setTextColor(Color.WHITE);
                             tbFpack.setTextColor(Color.WHITE);
+                            tbCones.setTextColor(Color.WHITE);
+                            tbConeb.setTextColor(Color.WHITE);
                             tbWater.setTextColor(Color.WHITE);
                             tbLassi.setTextColor(Color.WHITE);
                             tbOther.setTextColor(Color.WHITE);
@@ -1402,6 +1622,8 @@ public class MainActivity extends AppCompatActivity {
                             tbKulfi.setTextColor(Color.BLACK);
                             tbCbar.setTextColor(Color.BLACK);
                             tbFpack.setTextColor(Color.BLACK);
+                            tbCones.setTextColor(Color.BLACK);
+                            tbConeb.setTextColor(Color.BLACK);
                             tbWater.setTextColor(Color.BLACK);
                             tbLassi.setTextColor(Color.BLACK);
                             tbOther.setTextColor(Color.BLACK);
@@ -1431,6 +1653,8 @@ public class MainActivity extends AppCompatActivity {
                         tableRow.addView(tvKulfi);
                         tableRow.addView(tvCbar);
                         tableRow.addView(tvFpack);
+                        tableRow.addView(tvCones);
+                        tableRow.addView(tvConeb);
                         tableRow.addView(tvOther);
                         tableRow.addView(tvOther1);
                         tableRow.addView(tv17);
@@ -1554,6 +1778,12 @@ public class MainActivity extends AppCompatActivity {
         if (f2.fpackTotal != 0) {
             map_temp.put("fpack", f2.fpackTotal);
         }
+        if (f2.conesTotal != 0) {
+            map_temp.put("cones", f2.conesTotal);
+        }
+        if (f2.conebTotal != 0) {
+            map_temp.put("coneb", f2.conebTotal);
+        }
         if (f1.otherAmt != 0) {
             map_temp.put("otherAmt", f1.otherAmt);
         }
@@ -1607,13 +1837,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void printInvoice1(Long billNo_generated, Map<String, Item> map, int masterFinal, Object o, Object o1) throws FileNotFoundException {
+    private void printInvoice1(Long billNo_generated, Map<String, Item> map, int masterFinal, Object o, Object o1,String dateStrFull,String dateSYS) throws FileNotFoundException {
         SharedPreferences prefs;
         SharedPreferences.Editor editor;
         prefs = getSharedPreferences("d", MODE_PRIVATE);
         editor = prefs.edit();
         boolean isReprint = prefs.getBoolean("isReprint", false);
-        Date date = new Date();
+//        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
+        Date date = null;
+        try {
+            date = sdf.parse(dateStrFull);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         String datePattern = "dd/MM/yyyy";
         String fileSaveDatePattern = "yyMMddhhmmss";
         SimpleDateFormat datFormatForFileSave = new SimpleDateFormat(fileSaveDatePattern);
@@ -1702,7 +1939,54 @@ public class MainActivity extends AppCompatActivity {
         document.add(table);
         document.add(custInfoTable);
         document.add(itemInfoTable);
+        try {
+//            mypdfDocument.writeTo(new FileOutputStream(file));
+            System.out.println("File Generated Successfully\n"+path);
 
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Invoice");
+            builder.setIcon(R.drawable.ic_invoice);
+            builder.setCancelable(false);
+            builder.setMessage("Do you want to preview generated Invoice?");
+            builder.setPositiveButton("Preview", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        File file1 = null;
+                        if (isReprint) {
+                            file1 = new File(path, "/GajananColdrink_Bill_" + fileExt + "_" + billNo_generated + "_updated.pdf");
+                        } else {
+                            file1 = new File(path, "/GajananColdrink_Bill_" + fileExt + "_" + billNo_generated + ".pdf");
+                        }
+
+                        Uri uri;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file1);
+                        } else {
+                            uri = Uri.fromFile(file1);
+                        }
+                        intent.setDataAndType(uri, "application/pdf");
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivity(Intent.createChooser(intent, "Open With .."));
+                    } catch (Exception ex) {
+                        Toast.makeText(context, String.valueOf(ex), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } catch (Exception ex) {
+            System.out.println("File unable to Generate");
+            ex.printStackTrace();
+        }
         document.close();
 
     }

@@ -101,6 +101,7 @@
         android:layout_centerInParent="true"
         android:visibility="visible" />
     <HorizontalScrollView
+        android:visibility="gone"
         android:layout_marginTop="430dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

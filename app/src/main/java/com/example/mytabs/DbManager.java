@@ -19,7 +19,7 @@ public class DbManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String str = "create table t_bill (id integer primary key autoincrement,billNo integer,custName text,orange integer ,kokam integer,lemon integer,sarbat integer,pachak integer,wala integer,lsoda integer,ssrbt integer,lorange integer,llemon integer,jsoda integer, sSoda integer,water integer, lassi integer ,vanilla integer,pista integer,stwbry integer,mango integer,btrsch integer,kulfi integer,cbar integer,fpack integer,other integer,other1 integer,total integer,addedondatetime Date,date Date,otherItems String,otherItems1 String)";
+        String str = "create table t_bill (id integer primary key autoincrement,billNo integer,custName text,orange integer ,kokam integer,lemon integer,sarbat integer,pachak integer,wala integer,lsoda integer,ssrbt integer,lorange integer,llemon integer,jsoda integer, sSoda integer,water integer, lassi integer ,vanilla integer,pista integer,stwbry integer,mango integer,btrsch integer,kulfi integer,cbar integer,fpack integer,cones integer,coneb integer,other integer,other1 integer,total integer,addedondatetime Date,date Date,otherItems String,otherItems1 String)";
         db.execSQL(str);
         String str1 = "create table t_expense (id integer primary key autoincrement,selling integer, expense integer,profit integer,date Date,expenses text)";
         db.execSQL(str1);
@@ -31,7 +31,7 @@ public class DbManager extends SQLiteOpenHelper {
         db.execSQL("drop table if exists t_expense");
         onCreate(db);
     }
-    public String addRecord(Long billNo, String custName, int orange, int kokam, int lemon, int sarbat, int pachak, int walaTotal, int lSodaTotal, int ssrbtTotal, int lorange, int llemon,int jsoda, int sSoda,int water, int lassi ,int vanilla , int pista , int stwbry, int mango, int btrsch,int kulfi,int cbar,int fpack,int other,int other1,int finalTotal, String addedDate, String date,String otherItems,String otherItems1){
+    public String addRecord(Long billNo, String custName, int orange, int kokam, int lemon, int sarbat, int pachak, int walaTotal, int lSodaTotal, int ssrbtTotal, int lorange, int llemon,int jsoda, int sSoda,int water, int lassi ,int vanilla , int pista , int stwbry, int mango, int btrsch,int kulfi,int cbar,int fpack,int cones,int coneb,int other,int other1,int finalTotal, String addedDate, String date,String otherItems,String otherItems1){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("billNo",billNo);
@@ -58,6 +58,8 @@ public class DbManager extends SQLiteOpenHelper {
         cv.put("kulfi",kulfi);
         cv.put("cbar",cbar);
         cv.put("fpack",fpack);
+        cv.put("cones",cones);
+        cv.put("coneb",coneb);
         cv.put("other",other);
         cv.put("other1",other1);
         cv.put("total",finalTotal);
@@ -98,7 +100,7 @@ public class DbManager extends SQLiteOpenHelper {
         return c;
     }
 
-    public void updateOne(String cname, int parseInt, int parseInt1, int parseInt2, int parseInt3, int parseInt4, int parseInt5, int parseInt6, int parseInt7, int parseInt8, int parseInt9, int parseInt10, int parseInt11, int parseInt12, int parseInt13,int parseInt14,int parseInt15,int parseInt16,int parseInt17,int parseInt18,int parseInt19, int parseInt20,int parseInt21,int parseInt22,int parseInt23,int total,int billNo,String otherItems,String otherItems1) {
+    public void updateOne(String cname, int parseInt, int parseInt1, int parseInt2, int parseInt3, int parseInt4, int parseInt5, int parseInt6, int parseInt7, int parseInt8, int parseInt9, int parseInt10, int parseInt11, int parseInt12, int parseInt13,int parseInt14,int parseInt15,int parseInt16,int parseInt17,int parseInt18,int parseInt19, int parseInt20,int parseInt21,int cones,int coneb,int parseInt22,int parseInt23,int total,int billNo,String otherItems,String otherItems1) {
         ContentValues c = new ContentValues();
         c.put("custName",cname);
         c.put("orange",parseInt);
@@ -124,6 +126,8 @@ public class DbManager extends SQLiteOpenHelper {
         c.put("kulfi",parseInt19);
         c.put("cbar",parseInt20);
         c.put("fpack",parseInt21);
+        c.put("cones",cones);
+        c.put("coneb",coneb);
         c.put("other",parseInt22);
         c.put("other1",parseInt23);
         c.put("total",total);
@@ -243,7 +247,7 @@ public class DbManager extends SQLiteOpenHelper {
         db.insert("t_expense",null,cv);
     }
 
-    public void addFromCSV1(int billNo, String custName, int orange, int kokam, int lemon, int sarbat, int pachak, int wala, int lsoda, int ssrbt, int lorange, int llemon, int jsoda, int sSoda, int water, int lassi, int vanilla, int pista, int stwbry, int mango, int btrsch, int kulfi, int cbar, int fpack, int other, int other1, int total, String addedDateTime, String date,String otherItems,String otherItems1) {
+    public void addFromCSV1(int billNo, String custName, int orange, int kokam, int lemon, int sarbat, int pachak, int wala, int lsoda, int ssrbt, int lorange, int llemon, int jsoda, int sSoda, int water, int lassi, int vanilla, int pista, int stwbry, int mango, int btrsch, int kulfi, int cbar, int fpack,int cones,int coneb, int other, int other1, int total, String addedDateTime, String date,String otherItems,String otherItems1) {
         SQLiteDatabase db = this.getWritableDatabase();
 //        db.execSQL("delete from t_bill");
         ContentValues cv = new ContentValues();
@@ -271,6 +275,8 @@ public class DbManager extends SQLiteOpenHelper {
         cv.put("kulfi",kulfi);
         cv.put("cbar",cbar);
         cv.put("fpack",fpack);
+        cv.put("cones",cones);
+        cv.put("coneb",coneb);
         cv.put("other",other);
         cv.put("other1",other1);
         cv.put("total",total);

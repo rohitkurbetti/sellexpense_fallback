@@ -37,10 +37,14 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Text;
@@ -51,6 +55,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -860,7 +865,7 @@ public class ScheduleFragment extends Fragment {
         Cursor res = db.findRange(tt.getText().toString(), tt.getText().toString());
         if (res.getCount() > 0) {
             while (res.moveToNext()) {
-                todayTotal += Integer.parseInt(String.valueOf(res.getInt(27)));
+                todayTotal += Integer.parseInt(String.valueOf(res.getInt(29)));
             }
         } else {
             todayTotal = 0;
